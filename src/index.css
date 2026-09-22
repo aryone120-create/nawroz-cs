@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-navy: #1B2A4A;
+  --color-navy-dark: #0A1628;
+  --color-navy-mid: #112040;
+  --color-gold: #C8960C;
+  --color-gold-bright: #F0B429;
+  --color-teal: #0EA5E9;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ltr { direction: ltr; }
+.rtl { direction: rtl; }

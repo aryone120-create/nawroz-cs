@@ -1,0 +1,253 @@
+=========================================================
+  WEBSITE TEXT CONTENT — Computer Science, Nawroz University
+=========================================================
+
+─────────────────────────────
+  NAV BAR
+─────────────────────────────
+Logo alt: "Nawroz University"
+"Computer Science"
+"NAWROZ UNIVERSITY · DUHOK"
+
+Nav links:
+  Worlds | Byte | Why CS | FAQ | Find Us
+
+CTA button: "Find Our Table"
+
+
+─────────────────────────────
+  HERO SECTION
+─────────────────────────────
+Kurdish tagline (RTL, Noto Kufi Arabic):
+  "جیهانا خۆ بنیات بکە"
+
+Badge: "WELCOME TO THE DIGITAL WORLD"
+
+H1:
+  "We have a world of our own."
+  "Come build yours inside it."
+
+Body paragraph:
+  "Ours is the digital world — and here you don't just enter it, you carve out your own place within it. While others memorize what already exists, you'll create what doesn't: artificial intelligence, games, robots, and the software that runs the planet."
+
+Buttons:
+  "Enter our world →"
+  "Why choose CS"
+
+Metrics:
+  "6"  →  "worlds to master"
+  "4"  →  "year Bachelor's degree"
+  "∞"  →  "places you can work from"
+
+
+─────────────────────────────
+  WORLDS SECTION  (id="worlds")
+─────────────────────────────
+Section label: "// WHAT YOU'LL LEARN"
+H2: "Six worlds. You'll explore them all."
+Sub-text: "These aren't separate tracks to choose between — every Computer Science student learns all six. One degree, six ways to build."
+
+Cards:
+  🤖  Artificial Intelligence
+      "Think. Predict. Automate."
+      "Train neural networks and build systems that see, understand, and decide. The frontier everyone is racing toward — and you get there first."
+
+  🎮  Game Design
+      "Build worlds people play in."
+      "Design characters, physics, and universes. Turn imagination into interactive worlds that millions can step inside."
+
+  🦾  Robotics
+      "Machines that move and sense."
+      "Give hardware a brain. Program machines that perceive their surroundings and act on their own."
+
+  🌐  Web Development
+      "Power the internet."
+      "Build the platforms the world lives on. From idea to a site used across the planet in an afternoon."
+
+  📱  Mobile Apps
+      "A billion pockets, your idea."
+      "Ship apps that live in people's hands every day. Your creation, everywhere they go."
+
+  🖥️  Desktop Software
+      "Tools the world relies on."
+      "Engineer the powerful software professionals depend on to get real work done."
+
+
+─────────────────────────────
+  MEET BYTE SECTION  (id="byte")
+─────────────────────────────
+Section label: "// MEET THE DEPARTMENT"
+H2: "This is Byte. 🐭"
+Sub-text: "Our little mascot runs on network cables and pure curiosity — just like us. Go on, bother her a little."
+
+Byte's initial greeting speech bubble:
+  "Hey! I'm Byte. Click any part of me, or pet me! 🐭⚡"
+
+Interactive button labels:
+  "✨ Tame Byte"  /  "💙 Love on Byte"  (toggles after taming)
+  "🧀 High-RAM Cheese"
+  "✂️ Unseat cable"  /  "🔌 Plug cable back"  (toggles)
+  "😴 Low-power mode"
+
+Hint text below buttons:
+  "click her eyes, ears, nose, cheeks, tummy, tail, paws or cable — each reacts differently 🐭"
+
+Byte's speech-bubble reactions (random per interaction):
+
+  body (click):
+    "Squeak! Core dump averted. Careful! 🐭"
+    "Ticklish runtime exception!"
+    "404: Poking permit not found."
+
+  eyes:
+    "Tracking your cursor with 120 FPS precision! 👀"
+    "Scanning your git history… looks clean."
+
+  ears:
+    "Streaming gigabit packets straight to my ears! 📡"
+    "*ear twitch* …did someone push to main?"
+
+  nose:
+    "Boop detected! System rebooting… 🐽"
+    "*sniff sniff* smells like fresh coffee and syntax errors."
+
+  cheeks:
+    "Blush buffer overflow! 💗"
+    "Aww, stop it, you'll overheat my cache!"
+
+  belly:
+    "Careful! That's where the high-speed NVMe lives!"
+    "Hehe, tummy scritches = +50 morale."
+
+  tail:
+    "Hey! That's my high-gain 5GHz antenna! ⚡"
+    "Tail-pull interrupt received! Status: annoyed."
+
+  paws:
+    "Tiny paws, flawless refactors. 🐾"
+    "Ready to ship production code today!"
+
+  cable (while chewing):
+    "Crunchy Cat-6… 10 Gbps of pure flavour! 🔌"
+    "Low-latency snack of champions."
+
+  cable re-anchor (click when pulled out):
+    "Nom! Cable re-anchored at 10 Gbps 🔌✨"
+
+  pet / tame:
+    "Awww 💙 Petting loop initialised! Best dev partner ever."
+    "Happiness level: O(1)."
+
+  cheese button:
+    "Yum! +16GB DDR5 cheese received! 🧀"
+
+  unseat cable:
+    "NOOO! Connection timeout! 😱"
+    "Bandwidth dropping to 0 Kbps! 🚨"
+
+  plug cable back:
+    "Ahhh, packet stream restored! 🔌⚡"
+
+  low-power mode:
+    "Entering suspend-to-RAM mode… zzz"
+
+  wake (click any part while sleepy):
+    "zzz… huh?! I was compiling in the background."
+    "Waking from sleep state… ready!"
+
+
+─────────────────────────────
+  WHY CS SECTION  (id="why")
+─────────────────────────────
+Section label: "// WHY THIS, NOT THAT"
+H2: "Four reasons to build instead of memorize."
+
+Reason 01 — "You create, not memorize"
+  "Medicine asks you to memorize what already exists. We hand you the tools to build what doesn't exist yet — and let you decide what the future looks like."
+
+Reason 02 — "Your classroom has no borders"
+  "A laptop is your lab. Study, build, and work from Duhok, from home, or from anywhere on Earth. Your world isn't confined to one building."
+
+Reason 03 — "One field powers every other"
+  "Hospitals, banks, farms, films, phones — all run on code. Choose CS and you don't compete with one industry, you become essential to all of them."
+
+Reason 04 — "You start building on day one"
+  "No waiting years to touch real work. From your first semester you're making apps, games, and intelligent systems that actually run."
+
+
+─────────────────────────────
+  BORDERLESS BANNER
+─────────────────────────────
+🌍
+H2: "Your classroom has no walls. Your career has no map."
+Body: "Build from Duhok, from home, or from the other side of the world. In our world, where you are never decides what you can create."
+
+
+─────────────────────────────
+  FAQ SECTION  (id="faq")
+─────────────────────────────
+Section label: "// BEFORE YOU DECIDE"
+H2: "Questions, answered."
+
+Q1: "Do I need coding experience to start?"
+A1: "None at all. We start from zero. What we look for is curiosity and the willingness to build — the rest, we teach you, step by step."
+
+Q2: "What language are courses taught in?"
+A2: "Courses are taught in Kurdish and English. Programming is naturally an English-literate craft, and we build that skill with you as you go — a lasting advantage in itself."
+
+Q3: "How is this different from the medical programs?"
+A3: "Different worlds entirely. CS is about creating and inventing rather than memorizing. It is a four-year Bachelor's degree, and your work is not tied to a single place or profession."
+
+Q4: "Who teaches the courses?"
+A4: "Experienced professionals who have built real software and systems — people who bring the practice of the field, not only its theory, into the room."
+
+Q5: "What can I actually build here?"
+A5: "AI models, video games, robots, websites, mobile apps, and desktop software. Six worlds, one department — you choose which to master."
+
+
+─────────────────────────────
+  FIND US / JOIN SECTION  (id="join")
+─────────────────────────────
+Section label: "// COME SAY HELLO"
+H2:
+  "Let's build your future,"
+  "together."
+
+Body paragraph:
+  "Behind this table is a family that codes, creates, and dreams as one. Bring your curiosity — we'll bring the tools, the mentors, and a place where you truly belong. Your world in Computer Science begins the moment you say hello."
+
+Table-marker badge:
+  "FIND US AT ADMISSION"
+  "The Computer Science table"
+
+Quick facts:
+  🖥️  "College of Science"
+  🎓  "4-Year Bachelor's Degree"
+  🌍  "Build from anywhere"
+  🚀  "No experience needed"
+
+
+─────────────────────────────
+  FOOTER
+─────────────────────────────
+Logo alt: "Nawroz University"
+"Dept. of Computer Science"
+"NAWROZ UNIVERSITY · COLLEGE OF SCIENCE · DUHOK"
+
+Link: "Find Our Table →"
+
+Copyright line:
+  "© 2025 Nawroz University · We have a world of our own — come build yours inside it."
+
+
+─────────────────────────────
+  PEEK BYTE (corner peeker)
+─────────────────────────────
+Speech bubble — default (cursor far away):
+  "psst… peek-a-boo! come find me 🐭 →"
+
+Speech bubble — cursor nearby:
+  "over here! come see me 💙 let's be friends →"
+
+Speech bubble — sad (user scrolled away from Byte's section):
+  "don't make me miss you… 🥺 come join us so we can be friends 💙"
