@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { MASCOT_COPY, type ReactionKey } from '../mascotCopy';
+import { RTL_LANGS, type Lang } from '../i18n';
 
 const display = "'Sora', -apple-system, sans-serif";
 
@@ -6,28 +8,22 @@ const SIZE = 260;
 
 export type Mood = 'idle' | 'happy' | 'love' | 'annoyed' | 'surprised' | 'sleepy' | 'sad';
 
-const R: Record<string, { mood: Mood; lines: string[] }> = {
-  body: { mood: 'annoyed', lines: ['Squeak! Core dump averted. Careful! 🐭', 'Ticklish runtime exception!', '404: Poking permit not found.'] },
-  eyes: { mood: 'surprised', lines: ['Tracking your cursor with 120 FPS precision! 👀', 'Scanning your git history… looks clean.'] },
-  ears: { mood: 'happy', lines: ['Streaming gigabit packets straight to my ears! 📡', '*ear twitch* …did someone push to main?'] },
-  nose: { mood: 'surprised', lines: ['Boop detected! System rebooting… 🐽', '*sniff sniff* smells like fresh coffee and syntax errors.'] },
-  cheek: { mood: 'love', lines: ['Blush buffer overflow! 💗', 'Aww, stop it, you’ll overheat my cache!'] },
-  belly: { mood: 'love', lines: ['Careful! That’s where the high-speed NVMe lives!', 'Hehe, tummy scritches = +50 morale.'] },
-  tail: { mood: 'annoyed', lines: ['Hey! That’s my high-gain 5GHz antenna! ⚡', 'Tail-pull interrupt received! Status: annoyed.'] },
-  paws: { mood: 'happy', lines: ['Tiny paws, flawless refactors. 🐾', 'Ready to ship production code today!'] },
-  cable: { mood: 'happy', lines: ['Crunchy Cat-6… 10 Gbps of pure flavour! 🔌', 'Low-latency snack of champions.'] },
-  pet: { mood: 'love', lines: ['Awww 💙 Petting loop initialised! Best dev partner ever.', 'Happiness level: O(1).'] },
-  wake: { mood: 'surprised', lines: ['zzz… huh?! I was compiling in the background.', 'Waking from sleep state… ready!'] },
-  ram: { mood: 'happy', lines: ['Squeak! Nibbled +16GB of raw bandwidth 🐭⚡', 'Crunchy DDR5 — my favourite byte-sized snack!', 'Mmm, dual-channel flavour.'] },
-  floppy: { mood: 'love', lines: ['Ooh, a vintage cracker! 1.44MB of pure crunch. 🐭💾', 'They don’t make snacks this crispy anymore.', 'Read-only, but so tasty.'] },
-  hub: { mood: 'surprised', lines: ['Chewed clean through 24 ports of uplink! 🐭🌐', 'Mmm, gigabit-flavoured plastic.', 'Careful — that one was still blinking!'] },
+const MOODS: Record<ReactionKey, Mood> = {
+  body: 'annoyed', eyes: 'surprised', ears: 'happy', nose: 'surprised', cheek: 'love', belly: 'love',
+  tail: 'annoyed', paws: 'happy', cable: 'happy', pet: 'love', wake: 'surprised', ram: 'happy', floppy: 'love', hub: 'surprised',
 };
 
 function pick(arr: string[]) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-export default function ByteMascot() {
+export default function ByteMascot({ lang }: { lang: Lang }) {
+  const c = MASCOT_COPY[lang];
+  const rtl = RTL_LANGS.includes(lang);
+  const font = rtl ? "'Noto Kufi Arabic', Tahoma, sans-serif" : display;
   const [mood, setMood] = useState<Mood>('idle');
-  const [speech, setSpeech] = useState<string | null>('Hey! I’m Byte. Click any part of me, or pet me! 🐭⚡');
+  const [speech, setSpeech] = useState<string | null>(c.intro);
+
+  /* switching language mid-conversation: restart her greeting in the new language */
+  useEffect(() => { setSpeech(c.intro); }, [lang]); // eslint-disable-line react-hooks/exhaustive-deps
   const [cableOut, setCableOut] = useState(false);
   const [tamed, setTamed] = useState(false);
   const [blink, setBlink] = useState(false);
@@ -65,21 +61,21 @@ export default function ByteMascot() {
     moodTimer.current = window.setTimeout(() => setMood(tamed ? 'happy' : 'idle'), 3200);
   };
 
-  const react = (key: keyof typeof R) => {
-    if (mood === 'sleepy' && key !== 'body') { nudge(R.wake.mood, pick(R.wake.lines)); return; }
-    const r = R[key]; nudge(r.mood, pick(r.lines));
+  const react = (key: ReactionKey) => {
+    if (mood === 'sleepy' && key !== 'body') { nudge(MOODS.wake, pick(c.lines.wake)); return; }
+    nudge(MOODS[key], pick(c.lines[key]));
     setTamed(true);
   };
 
-  const hit = (key: keyof typeof R) => (e: React.MouseEvent) => {
+  const hit = (key: ReactionKey) => (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (key === 'cable' && cableOut) { setCableOut(false); nudge('happy', 'Nom! Cable re-anchored at 10 Gbps 🔌✨'); return; }
+    if (key === 'cable' && cableOut) { setCableOut(false); nudge('happy', c.cableBack); return; }
     react(key);
   };
 
   const pullCable = () => {
-    if (cableOut) { setCableOut(false); nudge('happy', 'Ahhh, packet stream restored! 🔌⚡'); }
-    else { setCableOut(true); nudge('surprised', pick(['NOOO! Connection timeout! 😱', 'Bandwidth dropping to 0 Kbps! 🚨'])); }
+    if (cableOut) { setCableOut(false); nudge('happy', c.cableRestored); }
+    else { setCableOut(true); nudge('surprised', pick(c.cableOut)); }
   };
 
   return (
@@ -91,7 +87,7 @@ export default function ByteMascot() {
         @keyframes ear-twitch { 0%,92%,100% { transform: rotate(0) } 95% { transform: rotate(-4deg) } 97% { transform: rotate(2deg) } }
         @keyframes spark-glow { 0%,100% { opacity: 0.3; transform: scale(0.9) } 50% { opacity: 1; transform: scale(1.15) } }
         @keyframes tear-drip { 0% { opacity: 0; transform: translateY(0) scale(.6) } 25% { opacity: 1 } 100% { opacity: 0; transform: translateY(22px) scale(1) } }
-        .byte-action-btn { background: rgba(8,20,38,0.75); border: 1px solid rgba(56,189,248,0.28); color: #F8FAFC; font-family: ${display}; font-size: 13px; font-weight: 600; padding: 10px 15px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; }
+        .byte-action-btn { background: rgba(8,20,38,0.75); border: 1px solid rgba(56,189,248,0.28); color: #F8FAFC; font-family: ${font}; font-size: 13px; font-weight: 600; padding: 10px 15px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; }
         .byte-action-btn:hover { background: rgba(2,132,199,0.85); transform: translateY(-2px); box-shadow: 0 8px 22px rgba(2,132,199,0.4); }
         .byte-interactable { cursor: pointer; transition: filter 0.15s ease; }
         .byte-interactable:hover { filter: drop-shadow(0 0 6px rgba(56,189,248,0.6)); }
@@ -105,7 +101,7 @@ export default function ByteMascot() {
             width: 'max-content', maxWidth: 250,
             background: 'linear-gradient(135deg, rgba(15,23,42,0.96), rgba(30,41,59,0.92))',
             backdropFilter: 'blur(10px)', border: '1px solid rgba(56,189,248,0.4)', color: '#F0F9FF',
-            padding: '12px 16px', borderRadius: 16, fontFamily: display, fontSize: 13.5, lineHeight: 1.45,
+            padding: '12px 16px', borderRadius: 16, fontFamily: font, fontSize: 13.5, direction: rtl ? 'rtl' : 'ltr', textAlign: 'center', lineHeight: 1.45,
             fontWeight: 500, boxShadow: '0 16px 36px rgba(0,0,0,0.35)', pointerEvents: 'none', zIndex: 10,
           }}>
             {speech}
@@ -121,10 +117,10 @@ export default function ByteMascot() {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
         {(
           [
-            { icon: cableOut ? <PlugIcon /> : <CableIcon />, label: cableOut ? 'Plug cable back' : 'Unseat cable', action: pullCable },
-            { icon: <RamIcon />, label: 'Snack: RAM stick', action: () => react('ram') },
-            { icon: <FloppyIcon />, label: 'Snack: Floppy disk', action: () => react('floppy') },
-            { icon: <HubIcon />, label: 'Snack: Network hub', action: () => react('hub') },
+            { icon: cableOut ? <PlugIcon /> : <CableIcon />, label: cableOut ? c.buttons.plug : c.buttons.unplug, action: pullCable },
+            { icon: <RamIcon />, label: c.buttons.ram, action: () => react('ram') },
+            { icon: <FloppyIcon />, label: c.buttons.floppy, action: () => react('floppy') },
+            { icon: <HubIcon />, label: c.buttons.hub, action: () => react('hub') },
           ] as { icon: ReactNode; label: string; action: () => void }[]
         ).map(({ icon, label, action }) => (
           <button key={label} onClick={action} className="byte-action-btn">
@@ -133,8 +129,8 @@ export default function ByteMascot() {
           </button>
         ))}
       </div>
-      <div style={{ fontFamily: display, fontSize: 12, color: 'rgba(255,255,255,0.42)', textAlign: 'center' }}>
-        click her eyes, ears, nose, cheeks, tummy, tail, paws — or feed her the hardware below 🐭
+      <div style={{ fontFamily: font, fontSize: 12.5, color: 'rgba(255,255,255,0.5)', textAlign: 'center', maxWidth: 440, lineHeight: 1.7 }}>
+        {c.caption}
       </div>
     </div>
   );

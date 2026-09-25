@@ -1,40 +1,66 @@
 import { useEffect, useRef, useState } from 'react'
 import { HighEndByteSvg, type Mood } from './MouseMascot'
+import { MASCOT_COPY } from '../mascotCopy'
+import { RTL_LANGS, type Lang } from '../i18n'
 
 /* ── Peeking Byte ──
-   The SAME mouse as the section mascot, peeking up from the true bottom edge
-   of the screen (mobile and desktop alike) — no wall, no ledge, just cropped
-   by the screen edge itself, like she's climbing up into view.
-   Eyes follow the cursor; come near and she perks up. Scroll away from her
-   section and she gets sad and asks you to stay. */
+   The same mouse as the section mascot, peeking up from the true bottom edge
+   of the screen on the reading-end side (right in English, left in Kurdish/Arabic).
 
-const display = "'Sora', sans-serif"
+   Behaviour:
+   - stays out of the way on the hero, so the first impression is clean
+   - hides while her own section is on screen
+   - her bubble shows briefly, then fades so it never permanently covers content;
+     it comes back when the cursor comes near, or when you leave her section (sad)
+   - can be dismissed for the rest of the visit
+   - eyes follow the cursor */
 
-const WIN_H = 108        // how much of the head shows above the screen edge
-const SHIFT_Y = -12      // frame the head so we crop right at the nose
-const EDGE_OVERLAP = 10  // she sits slightly past the true edge so she's flush, not floating above it
+const HIDE_KEY = 'peekbyte-hidden'
 
-export default function PeekByte() {
+function readHidden() {
+  try { return sessionStorage.getItem(HIDE_KEY) === '1' } catch { return false }
+}
+function writeHidden() {
+  try { sessionStorage.setItem(HIDE_KEY, '1') } catch { /* private mode etc. — fine */ }
+}
+
+export default function PeekByte({ lang }: { lang: Lang }) {
+  const c = MASCOT_COPY[lang].peek
+  const rtl = RTL_LANGS.includes(lang)
+  const font = rtl ? "'Noto Kufi Arabic', Tahoma, sans-serif" : "'Sora', sans-serif"
+
   const winRef = useRef<HTMLDivElement>(null)
   const wasAtSection = useRef(false)
   const sadTimer = useRef<number | undefined>(undefined)
+  const bubbleTimer = useRef<number | undefined>(undefined)
 
   const [pupil, setPupil] = useState({ x: 0, y: 0 })
   const [mood, setMood] = useState<Mood>('idle')
   const [near, setNear] = useState(false)
   const [atSection, setAtSection] = useState(false)
+  const [pastHero, setPastHero] = useState(false)
   const [enabled, setEnabled] = useState(false)
+  const [dismissed, setDismissed] = useState(readHidden)
+  const [bubbleOn, setBubbleOn] = useState(false)
   const [svgW, setSvgW] = useState(200)
 
-  /* show on any screen with a bit of vertical room; size the head to fit */
+  /* size to the screen; skip very short screens (landscape phones) */
   useEffect(() => {
     const check = () => {
       setEnabled(window.innerHeight > 430)
-      setSvgW(window.innerWidth < 560 ? 150 : 200)
+      setSvgW(window.innerWidth < 560 ? 120 : 176)
     }
     check()
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
+  }, [])
+
+  /* only appear once the visitor has scrolled past most of the hero */
+  useEffect(() => {
+    const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.7)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   /* hide while her section is on screen; get sad when leaving it */
@@ -62,68 +88,106 @@ export default function PeekByte() {
       const w = winRef.current
       if (!w) return
       const r = w.getBoundingClientRect()
-      const cx = r.left + r.width / 2
-      const cy = r.top + r.height * 0.42
-      const dx = e.clientX - cx
-      const dy = e.clientY - cy
+      const dx = e.clientX - (r.left + r.width / 2)
+      const dy = e.clientY - (r.top + r.height * 0.42)
       const angle = Math.atan2(dy, dx)
       const dist = Math.min(4.5, Math.hypot(dx, dy) * 0.015)
       setPupil({ x: Math.cos(angle) * dist, y: Math.sin(angle) * dist })
-      setNear(Math.hypot(dx, dy) < 300)
+      setNear(Math.hypot(dx, dy) < 260)
     }
     window.addEventListener('mousemove', onMove)
     return () => window.removeEventListener('mousemove', onMove)
   }, [enabled])
 
-  if (!enabled || atSection) return null
+  const visible = enabled && !dismissed && pastHero && !atSection
+
+  /* bubble: show for a few seconds whenever she (re)appears, gets sad, or the cursor comes near */
+  useEffect(() => {
+    if (!visible) { setBubbleOn(false); return }
+    setBubbleOn(true)
+    window.clearTimeout(bubbleTimer.current)
+    bubbleTimer.current = window.setTimeout(() => setBubbleOn(false), mood === 'sad' ? 5200 : 4200)
+    return () => window.clearTimeout(bubbleTimer.current)
+  }, [visible, mood, near])
+
+  if (!visible) return null
 
   const goToByte = () => document.getElementById('byte')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   const peekHit = () => (e: React.MouseEvent) => { e.stopPropagation(); goToByte() }
-  const headLeft = svgW < 170 ? 14 : 28
+  const dismiss = (e: React.MouseEvent) => { e.stopPropagation(); writeHidden(); setDismissed(true) }
 
-  const bubble =
-    mood === 'sad' ? 'don’t make me miss you… 🥺 come join us so we can be friends 💙' :
-    near ? 'over here! come see me 💙 let’s be friends →' :
-    'psst… peek-a-boo! come find me 🐭 →'
+  const winH = Math.round(svgW * 0.54)
+  const shiftY = Math.round(svgW * -0.06)
+  const EDGE_OVERLAP = 8
+  const inset = svgW < 150 ? 10 : 24
+  /* reading-end side: right for English, left for Kurdish/Arabic */
+  const side = rtl ? { left: inset } : { right: inset }
+  const bubbleSide = rtl ? { left: 12 } : { right: 12 }
+  const tailSide = rtl ? { left: Math.min(svgW / 2, 60) } : { right: Math.min(svgW / 2, 60) }
+
+  const text = mood === 'sad' ? c.sad : near ? c.near : c.idle
 
   return (
-    /* full-width, click-through container; only the mouse + wall catch clicks */
-    <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 60, pointerEvents: 'none' }}>
+    <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, height: 0, zIndex: 60, pointerEvents: 'none' }}>
       <style>{`
-        @keyframes peek-rise { from { transform: translateY(30px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+        @keyframes peek-rise { from { transform: translateY(40px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
         @keyframes peek-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }
+        .peek-bubble { transition: opacity .35s ease, transform .35s ease; }
+        .peek-x { opacity: .55; transition: opacity .2s; }
+        .peek-x:hover, .peek-x:focus-visible { opacity: 1; }
+        @media (prefers-reduced-motion: reduce) { .peek-head { animation: none !important; } }
       `}</style>
 
       {/* invite bubble */}
-      <div style={{
-        position: 'absolute', bottom: WIN_H - EDGE_OVERLAP + 10, left: Math.max(12, headLeft - 8),
-        width: 'max-content', maxWidth: 'min(236px, 82vw)',
-        background: '#fff', color: '#0b1a30', padding: '11px 15px', borderRadius: 16,
-        fontFamily: display, fontSize: 13.5, fontWeight: 700, lineHeight: 1.35,
-        boxShadow: '0 14px 34px rgba(0,0,0,0.4)', textAlign: 'center',
-        cursor: 'pointer', pointerEvents: 'auto',
-      }} onClick={goToByte}>
-        {bubble}
-        <span style={{ position: 'absolute', left: 40, bottom: -6, width: 13, height: 13, background: '#fff', transform: 'rotate(45deg)', borderRadius: 2 }} />
+      <div
+        className="peek-bubble"
+        role="status"
+        dir={rtl ? 'rtl' : 'ltr'}
+        onClick={goToByte}
+        style={{
+          position: 'absolute', bottom: winH - EDGE_OVERLAP + 12, ...bubbleSide,
+          width: 'max-content', maxWidth: 'min(230px, 70vw)',
+          background: '#fff', color: '#0b1a30', padding: '10px 30px 10px 14px', borderRadius: 14,
+          ...(rtl ? { padding: '10px 14px 10px 30px' } : {}),
+          fontFamily: font, fontSize: 13, fontWeight: 700, lineHeight: 1.5,
+          boxShadow: '0 14px 34px rgba(0,0,0,0.4)',
+          cursor: 'pointer',
+          opacity: bubbleOn ? 1 : 0,
+          transform: bubbleOn ? 'none' : 'translateY(6px)',
+          pointerEvents: bubbleOn ? 'auto' : 'none',
+        }}>
+        {text}
+        <button
+          className="peek-x"
+          onClick={dismiss}
+          aria-label={c.close}
+          title={c.close}
+          style={{
+            position: 'absolute', top: 4, ...(rtl ? { left: 4 } : { right: 4 }),
+            width: 22, height: 22, border: 'none', background: 'transparent', cursor: 'pointer',
+            fontSize: 15, lineHeight: 1, color: '#0b1a30', borderRadius: 6,
+          }}>×</button>
+        <span style={{ position: 'absolute', bottom: -6, ...tailSide, width: 12, height: 12, background: '#fff', transform: 'rotate(45deg)', borderRadius: 2 }} />
       </div>
 
-      {/* the head, flush with the true screen edge — no wall, no ledge */}
-      <div ref={winRef} onClick={goToByte} style={{
-        position: 'absolute', bottom: -EDGE_OVERLAP, left: headLeft, zIndex: 2,
-        width: svgW, height: WIN_H, overflow: 'hidden', cursor: 'pointer', pointerEvents: 'auto',
-        filter: 'drop-shadow(0 10px 18px rgba(0,0,0,0.35))',
-        animation: 'peek-rise .6s cubic-bezier(.55,0,.35,1.3), peek-bob 4s ease-in-out infinite',
-      }}>
-        <div style={{ width: svgW, transform: `translateY(${SHIFT_Y}px)` }}>
+      {/* the head, flush with the true screen edge */}
+      <div
+        ref={winRef}
+        className="peek-head"
+        onClick={goToByte}
+        onMouseEnter={() => setBubbleOn(true)}
+        role="button"
+        aria-label={c.idle}
+        style={{
+          position: 'absolute', bottom: -EDGE_OVERLAP, ...side, zIndex: 2,
+          width: svgW, height: winH, overflow: 'hidden', cursor: 'pointer', pointerEvents: 'auto',
+          filter: 'drop-shadow(0 10px 18px rgba(0,0,0,0.35))',
+          animation: 'peek-rise .6s cubic-bezier(.55,0,.35,1.3), peek-bob 4s ease-in-out .6s infinite',
+        }}>
+        <div style={{ width: svgW, transform: `translateY(${shiftY}px)` }}>
           <HighEndByteSvg mood={mood} blink={false} cableOut={true} hit={peekHit} pupilOffset={pupil} />
         </div>
       </div>
-
-      {/* thin invisible click-catcher along the true edge — no visible wall */}
-      <div onClick={goToByte} style={{
-        position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 1, height: 28,
-        cursor: 'pointer', pointerEvents: 'auto',
-      }} />
     </div>
   )
 }

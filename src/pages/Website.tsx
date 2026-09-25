@@ -3,6 +3,7 @@ import logo from '../assets/university-logo.png'
 import MouseMascot from '../components/MouseMascot'
 import PeekByte from '../components/PeekByte'
 import { WORLD_ICON_COMPONENTS } from '../components/WorldIcons'
+import { CapIcon, CollegeIcon, ExternalIcon, GlobeIcon, SparkIcon, WorldBadge } from '../components/LineIcons'
 import { COPY, LANG_LABELS, RTL_LANGS, WORLD_NAMES, DEPARTMENT_URL, type Lang } from '../i18n'
 
 /* ── Palette: deep-space blue, no gold ── */
@@ -60,7 +61,16 @@ export default function Website() {
 
   const t = COPY[lang]
   const rtl = RTL_LANGS.includes(lang)
-  const langFont = rtl ? "'Noto Kufi Arabic', 'Tahoma', sans-serif" : body
+  const kufi = "'Noto Kufi Arabic', 'Noto Sans Arabic', Tahoma, sans-serif"
+  const langFont = rtl ? "'Noto Sans Arabic', 'Noto Kufi Arabic', Tahoma, sans-serif" : body
+  const headFont = rtl ? kufi : display
+  /* small uppercase labels: monospace + tracking in English; in Kurdish/Arabic, letter-spacing
+     breaks letter joining, so use the Kufi face with no tracking instead */
+  const kicker = (extra: React.CSSProperties = {}): React.CSSProperties => (
+    rtl
+      ? { fontFamily: kufi, fontSize: 13, fontWeight: 600, letterSpacing: 0, color: BLUE, ...extra }
+      : { fontFamily: mono, fontSize: 12, letterSpacing: 2, color: BLUE, ...extra }
+  )
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY)
@@ -82,9 +92,15 @@ export default function Website() {
         @keyframes pulse { 0%,100% { opacity: .5; transform: scale(1) } 50% { opacity: .85; transform: scale(1.06) } }
         @keyframes orbit { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
         html { scroll-behavior: smooth; }
+        section[id] { scroll-margin-top: 76px; }
+        a:focus-visible, button:focus-visible { outline: 2px solid ${BLUE_GLOW}; outline-offset: 3px; border-radius: 10px; }
+        @media (prefers-reduced-motion: reduce) {
+          html { scroll-behavior: auto; }
+          *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; }
+        }
         ::selection { background: ${BLUE}; color: #04101f; }
         .navlink { position: relative; }
-        .navlink::after { content:''; position:absolute; left:12px; right:12px; bottom:2px; height:1px; background:${BLUE_GLOW}; transform:scaleX(0); transform-origin:left; transition:transform .25s; }
+        .navlink::after { content:''; position:absolute; inset-inline:12px; bottom:2px; height:1px; background:${BLUE_GLOW}; transform:scaleX(0); transform-origin:${rtl ? 'right' : 'left'}; transition:transform .25s; }
         .navlink:hover::after { transform:scaleX(1); }
         .wcard { transition: transform .4s cubic-bezier(.2,.7,.2,1), border-color .4s, background .4s; }
         .wcard:hover { transform: translateY(-8px); border-color: rgba(56,189,248,.55) !important; background: rgba(14,165,233,.10) !important; }
@@ -160,9 +176,9 @@ export default function Website() {
             {/* language switcher */}
             <div className="lang-switcher" style={{ display: 'flex', alignItems: 'center', gap: 2, marginLeft: 8, padding: 3, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10 }}>
               {(['ku', 'ar', 'en'] as Lang[]).map((l) => (
-                <button key={l} onClick={() => setLang(l)} className="langbtn" style={{
+                <button key={l} onClick={() => setLang(l)} className="langbtn" aria-pressed={lang === l} lang={l} style={{
                   padding: '6px 10px', borderRadius: 7, border: 'none', cursor: 'pointer',
-                  fontFamily: mono, fontSize: 11.5, fontWeight: 700,
+                  fontFamily: l === 'en' ? mono : kufi, fontSize: l === 'en' ? 11.5 : 12.5, fontWeight: 700,
                   background: lang === l ? BLUE : 'transparent',
                   color: lang === l ? '#04101f' : 'rgba(255,255,255,0.6)',
                 }}>{LANG_LABELS[l]}</button>
@@ -175,6 +191,7 @@ export default function Website() {
               className="menu-btn"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Menu"
+              aria-expanded={menuOpen}
               style={{
                 marginLeft: 6, width: 40, height: 40, borderRadius: 10, border: '1px solid rgba(255,255,255,0.15)',
                 background: menuOpen ? 'rgba(56,189,248,0.15)' : 'transparent', cursor: 'pointer',
@@ -199,9 +216,9 @@ export default function Website() {
             <a href="#/poster" onClick={() => setMenuOpen(false)} style={{ color: 'rgba(255,255,255,0.55)', textDecoration: 'none', padding: '12px 4px', fontSize: 14, fontWeight: 500 }}>{t.nav.poster}</a>
             <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginTop: 12, padding: 3, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, alignSelf: 'flex-start' }}>
               {(['ku', 'ar', 'en'] as Lang[]).map((l) => (
-                <button key={l} onClick={() => setLang(l)} className="langbtn" style={{
-                  padding: '7px 12px', borderRadius: 7, border: 'none', cursor: 'pointer',
-                  fontFamily: mono, fontSize: 12, fontWeight: 700,
+                <button key={l} onClick={() => setLang(l)} className="langbtn" aria-pressed={lang === l} lang={l} style={{
+                  padding: '8px 14px', borderRadius: 7, border: 'none', cursor: 'pointer',
+                  fontFamily: l === 'en' ? mono : kufi, fontSize: l === 'en' ? 12 : 13.5, fontWeight: 700,
                   background: lang === l ? BLUE : 'transparent',
                   color: lang === l ? '#04101f' : 'rgba(255,255,255,0.6)',
                 }}>{LANG_LABELS[l]}</button>
@@ -222,18 +239,20 @@ export default function Website() {
         <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', textAlign: 'center' }}>
           {/* prominent Computer Science wordmark — always visible on load, every language */}
           <div style={{
-            fontFamily: mono, fontSize: 'clamp(13px, 1.6vw, 15px)', fontWeight: 800, letterSpacing: 3,
+            ...(rtl
+              ? { fontFamily: kufi, fontSize: 'clamp(15px, 1.8vw, 18px)', fontWeight: 800, letterSpacing: 0 }
+              : { fontFamily: mono, fontSize: 'clamp(13px, 1.6vw, 15px)', fontWeight: 800, letterSpacing: 3 }),
             color: BLUE_GLOW, textTransform: 'uppercase', marginBottom: 14, textShadow: `0 0 24px rgba(56,189,248,0.5)`,
           }}>
             {t.hero.kicker}
           </div>
 
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 50, marginBottom: 26, fontFamily: mono, fontSize: 11, letterSpacing: 1.5, color: BLUE_GLOW }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 50, marginBottom: 26, ...kicker({ fontSize: rtl ? 12 : 11, letterSpacing: rtl ? 0 : 1.5, color: BLUE_GLOW }) }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: BLUE_GLOW, animation: 'pulse 2s infinite' }} />
             {t.hero.badge}
           </div>
 
-          <h1 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(40px, 6.4vw, 78px)', fontWeight: 800, lineHeight: 1.08, letterSpacing: rtl ? 0 : -2, margin: '0 0 26px' }}>
+          <h1 style={{ fontFamily: headFont, fontSize: rtl ? 'clamp(32px, 6vw, 72px)' : 'clamp(36px, 6.4vw, 78px)', fontWeight: 800, lineHeight: rtl ? 1.35 : 1.08, letterSpacing: rtl ? 0 : -2, margin: '0 0 26px' }}>
             {t.hero.titleLine1}<br />
             <span style={{ background: `linear-gradient(90deg, ${BLUE_GLOW}, ${BLUE})`, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t.hero.titleLine2}</span>
           </h1>
@@ -248,11 +267,11 @@ export default function Website() {
           </div>
 
           {/* quiet metrics, no salary/employment */}
-          <div style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', marginTop: 64 }}>
+          <div style={{ display: 'flex', gap: 'clamp(18px, 6vw, 48px)', justifyContent: 'center', flexWrap: 'nowrap', marginTop: 64 }}>
             {[['7', t.hero.stat0], ['4', t.hero.stat1], ['∞', t.hero.stat2]].map(([n, l]) => (
               <div key={l} style={{ textAlign: 'center' }}>
                 <div style={{ fontFamily: display, fontSize: 40, fontWeight: 800, color: BLUE_GLOW, lineHeight: 1 }}>{n}</div>
-                <div style={{ fontFamily: rtl ? langFont : mono, fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 8, letterSpacing: 0.5 }}>{l}</div>
+                <div style={{ fontFamily: rtl ? kufi : mono, fontSize: rtl ? 12.5 : 11, color: 'rgba(255,255,255,0.5)', marginTop: 8, letterSpacing: rtl ? 0 : 0.5 }}>{l}</div>
               </div>
             ))}
           </div>
@@ -264,8 +283,8 @@ export default function Website() {
         <div style={{ maxWidth: 1180, margin: '0 auto' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
-              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>{t.worlds.kicker}</div>
-              <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.worlds.title}</h2>
+              <div style={kicker({ marginBottom: 14 })}>{t.worlds.kicker}</div>
+              <h2 style={{ fontFamily: headFont, fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.worlds.title}</h2>
               <p style={{ color: INK, fontSize: 16, maxWidth: 560, margin: '16px auto 0' }}>{t.worlds.subtitle}</p>
             </div>
           </Reveal>
@@ -284,7 +303,7 @@ export default function Website() {
                       background: 'rgba(14,165,233,0.05)', border: '1px solid rgba(56,189,248,0.18)',
                       borderRadius: 18, padding: '26px 24px', height: '100%', position: 'relative', overflow: 'hidden',
                     }}>
-                    <div style={{ position: 'absolute', top: -30, right: -30, width: 110, height: 110, background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+                    <div style={{ position: 'absolute', top: -30, insetInlineEnd: -30, width: 110, height: 110, background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
                       <div className="icon-tile">
                         {(() => { const Icon = WORLD_ICON_COMPONENTS[i]; return <Icon on={hoveredWorld === i} /> })()}
@@ -308,15 +327,16 @@ export default function Website() {
         <div style={{ maxWidth: 820, margin: '0 auto' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 40 }}>
-              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>{t.byte.kicker}</div>
-              <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(30px, 4.5vw, 48px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.byte.title}</h2>
+              <div style={kicker({ marginBottom: 14 })}>{t.byte.kicker}</div>
+              <h2 style={{ fontFamily: headFont, fontSize: 'clamp(30px, 4.5vw, 48px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.byte.title}</h2>
               <p style={{ color: INK, fontSize: 16, maxWidth: 520, margin: '16px auto 0' }}>
                 {t.byte.subtitle}
               </p>
             </div>
           </Reveal>
           <Reveal delay={0.1}>
-            <MouseMascot />
+            {/* headroom so her speech bubble never overlaps the subtitle */}
+            <div style={{ paddingTop: 64 }}><MouseMascot lang={lang} /></div>
           </Reveal>
         </div>
       </section>
@@ -326,8 +346,8 @@ export default function Website() {
         <div style={{ maxWidth: 1080, margin: '0 auto' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
-              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>{t.why.kicker}</div>
-              <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.why.title}</h2>
+              <div style={kicker({ marginBottom: 14 })}>{t.why.kicker}</div>
+              <h2 style={{ fontFamily: headFont, fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.why.title}</h2>
             </div>
           </Reveal>
 
@@ -335,24 +355,24 @@ export default function Website() {
             {/* selector */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {t.why.reasons.map((r, i) => (
-                <button key={i} onClick={() => setActive(i)} style={{
+                <button key={i} onClick={() => setActive(i)} aria-pressed={active === i} style={{
                   textAlign: rtl ? 'right' : 'left', cursor: 'pointer', padding: '16px 18px', borderRadius: 14,
                   background: active === i ? 'rgba(14,165,233,0.12)' : 'transparent',
                   border: `1px solid ${active === i ? 'rgba(56,189,248,0.45)' : 'rgba(255,255,255,0.08)'}`,
                   color: '#fff', display: 'flex', gap: 14, alignItems: 'center', transition: 'all .25s',
                 }}>
                   <span style={{ fontFamily: mono, fontSize: 13, color: active === i ? BLUE_GLOW : 'rgba(255,255,255,0.3)' }}>{String(i + 1).padStart(2, '0')}</span>
-                  <span style={{ fontFamily: rtl ? langFont : display, fontSize: 16, fontWeight: 600 }}>{r.t}</span>
+                  <span style={{ fontFamily: headFont, fontSize: 16, fontWeight: 600 }}>{r.t}</span>
                 </button>
               ))}
             </div>
             {/* panel */}
             <div style={{ position: 'relative', background: 'rgba(8,20,38,0.6)', border: '1px solid rgba(56,189,248,0.2)', borderRadius: 20, padding: 'clamp(26px, 4vw, 40px)', minHeight: 260, overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', bottom: -60, right: -60, width: 220, height: 220, background: 'radial-gradient(circle, rgba(14,165,233,0.16) 0%, transparent 70%)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: -60, insetInlineEnd: -60, width: 220, height: 220, background: 'radial-gradient(circle, rgba(14,165,233,0.16) 0%, transparent 70%)', pointerEvents: 'none' }} />
               <div key={active} style={{ animation: 'fadeSlide .5s ease' }}>
                 <style>{`@keyframes fadeSlide { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:none } }`}</style>
                 <div style={{ fontFamily: mono, fontSize: 48, fontWeight: 700, color: 'rgba(56,189,248,0.25)', lineHeight: 1 }}>{String(active + 1).padStart(2, '0')}</div>
-                <h3 style={{ fontFamily: rtl ? langFont : display, fontSize: 28, fontWeight: 700, margin: '14px 0 16px', letterSpacing: rtl ? 0 : -0.5 }}>{t.why.reasons[active].t}</h3>
+                <h3 style={{ fontFamily: headFont, fontSize: 28, fontWeight: 700, margin: '14px 0 16px', letterSpacing: rtl ? 0 : -0.5 }}>{t.why.reasons[active].t}</h3>
                 <p style={{ color: 'rgba(255,255,255,0.72)', fontSize: 17, lineHeight: 1.8, margin: 0 }}>{t.why.reasons[active].d}</p>
               </div>
             </div>
@@ -369,8 +389,8 @@ export default function Website() {
             border: '1px solid rgba(56,189,248,0.3)', padding: '54px 48px', textAlign: 'center',
           }}>
             <div style={{ position: 'absolute', top: -80, left: '50%', marginLeft: -200, width: 400, height: 400, background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
-            <div style={{ fontSize: 44, marginBottom: 16 }}>🌍</div>
-            <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: '0 0 14px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14, position: 'relative' }}><WorldBadge size={72} /></div>
+            <h2 style={{ fontFamily: headFont, fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: '0 0 14px' }}>
               {t.banner.title}
             </h2>
             <p style={{ color: INK, fontSize: 17, lineHeight: 1.7, maxWidth: 620, margin: '0 auto' }}>
@@ -385,19 +405,21 @@ export default function Website() {
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 48 }}>
-              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>{t.faq.kicker}</div>
-              <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(32px, 4.5vw, 48px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.faq.title}</h2>
+              <div style={kicker({ marginBottom: 14 })}>{t.faq.kicker}</div>
+              <h2 style={{ fontFamily: headFont, fontSize: 'clamp(32px, 4.5vw, 48px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.faq.title}</h2>
             </div>
           </Reveal>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {t.faq.items.map((f, i) => (
               <div key={i} style={{ background: 'rgba(8,20,38,0.6)', border: `1px solid ${openFaq === i ? 'rgba(56,189,248,0.4)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 14, overflow: 'hidden', transition: 'border-color .25s' }}>
-                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{ width: '100%', padding: '20px 24px', textAlign: rtl ? 'right' : 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
-                  <span style={{ fontFamily: rtl ? langFont : display, fontSize: 16, fontWeight: 600, color: '#fff' }}>{f.q}</span>
+                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} aria-expanded={openFaq === i} style={{ width: '100%', padding: '20px 24px', textAlign: rtl ? 'right' : 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+                  <span style={{ fontFamily: headFont, fontSize: 16, fontWeight: 600, color: '#fff' }}>{f.q}</span>
                   <span style={{ fontSize: 24, color: BLUE_GLOW, flexShrink: 0, transition: 'transform .25s', transform: openFaq === i ? 'rotate(45deg)' : 'none' }}>+</span>
                 </button>
-                <div style={{ maxHeight: openFaq === i ? 260 : 0, overflow: 'hidden', transition: 'max-height .4s ease' }}>
-                  <p style={{ padding: '0 24px 22px', fontSize: 15, color: INK, lineHeight: 1.8, margin: 0 }}>{f.a}</p>
+                <div style={{ display: 'grid', gridTemplateRows: openFaq === i ? '1fr' : '0fr', transition: 'grid-template-rows .4s ease' }}>
+                  <div style={{ overflow: 'hidden' }}>
+                    <p style={{ padding: '0 24px 22px', fontSize: 15, color: INK, lineHeight: 1.9, margin: 0 }}>{f.a}</p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -415,9 +437,9 @@ export default function Website() {
           }}>
             <div style={{ position: 'absolute', top: -90, left: '50%', marginLeft: -220, width: 440, height: 440, background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-            <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 18, position: 'relative' }}>{t.join.kicker}</div>
+            <div style={kicker({ marginBottom: 18, position: 'relative' })}>{t.join.kicker}</div>
 
-            <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(30px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1.2, margin: '0 0 20px', position: 'relative', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: headFont, fontSize: 'clamp(30px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1.2, margin: '0 0 20px', position: 'relative', lineHeight: 1.15 }}>
               {t.join.titleLine1}<br />
               <span style={{ background: `linear-gradient(90deg, ${BLUE_GLOW}, ${BLUE})`, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t.join.titleHighlight}</span>
             </h2>
@@ -438,12 +460,12 @@ export default function Website() {
                 position: 'relative', marginBottom: 18, textDecoration: 'none', color: '#fff',
               }}
             >
-              <span style={{ fontSize: 30 }}>🎓</span>
+              <span style={{ display: 'inline-flex', width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.14)', flexShrink: 0 }}><CapIcon size={26} color="#fff" /></span>
               <div style={{ textAlign: rtl ? 'right' : 'left' }}>
-                <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: 1, color: 'rgba(255,255,255,0.8)' }}>{t.join.tableKicker}</div>
-                <div style={{ fontFamily: rtl ? langFont : display, fontSize: 19, fontWeight: 800 }}>{t.join.tableTitle}</div>
+                <div style={{ ...kicker({ fontSize: rtl ? 12 : 11, letterSpacing: rtl ? 0 : 1, color: 'rgba(255,255,255,0.85)', fontWeight: 500 }) }}>{t.join.tableKicker}</div>
+                <div style={{ fontFamily: headFont, fontSize: 19, fontWeight: 800 }}>{t.join.tableTitle}</div>
               </div>
-              <span style={{ fontSize: 20, opacity: 0.85, marginInlineStart: 4 }}>↗</span>
+              <span style={{ display: 'inline-flex', opacity: 0.9, marginInlineStart: 4, flexShrink: 0 }}><ExternalIcon size={20} flip={rtl} /></span>
             </a>
             <div style={{ marginBottom: 30 }}>
               <a href={DEPARTMENT_URL} target="_blank" rel="noopener noreferrer" style={{ color: BLUE_GLOW, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>{t.join.linkLabel}</a>
@@ -451,9 +473,9 @@ export default function Website() {
 
             {/* quick facts */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 28, justifyContent: 'center', position: 'relative' }}>
-              {[['🖥️', t.join.facts[0]], ['🎓', t.join.facts[1]], ['🌍', t.join.facts[2]], ['🚀', t.join.facts[3]]].map(([ic, l]) => (
-                <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>
-                  <span style={{ fontSize: 18 }}>{ic}</span>{l}
+              {([[<CollegeIcon key="c" />, t.join.facts[0]], [<CapIcon key="a" />, t.join.facts[1]], [<GlobeIcon key="g" />, t.join.facts[2]], [<SparkIcon key="s" />, t.join.facts[3]]] as [ReactNode, string][]).map(([ic, l]) => (
+                <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.82)' }}>
+                  <span style={{ display: 'inline-flex', width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', background: 'rgba(56,189,248,0.10)', border: '1px solid rgba(56,189,248,0.22)' }}>{ic}</span>{l}
                 </div>
               ))}
             </div>
@@ -467,8 +489,8 @@ export default function Website() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <img src={logo} alt="Nawroz University" style={{ height: 36, width: 36, objectFit: 'contain', borderRadius: '50%', background: '#fff', padding: 3 }} />
             <div>
-              <div style={{ fontFamily: rtl ? langFont : display, fontWeight: 700, fontSize: 14 }}>{t.footer.deptName}</div>
-              <div style={{ fontFamily: rtl ? langFont : mono, fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: 0.5 }}>{t.footer.tagline}</div>
+              <div style={{ fontFamily: headFont, fontWeight: 700, fontSize: 14 }}>{t.footer.deptName}</div>
+              <div style={{ fontFamily: rtl ? kufi : mono, fontSize: rtl ? 11 : 10, color: 'rgba(255,255,255,0.45)', letterSpacing: rtl ? 0 : 0.5 }}>{t.footer.tagline}</div>
             </div>
           </div>
           <a href={DEPARTMENT_URL} target="_blank" rel="noopener noreferrer" className="navlink" style={{ color: BLUE_GLOW, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>{t.footer.findTable}</a>
@@ -477,7 +499,7 @@ export default function Website() {
       </footer>
 
       {/* shy Byte peeking from the corner */}
-      <PeekByte />
+      <PeekByte lang={lang} />
     </div>
   )
 }
