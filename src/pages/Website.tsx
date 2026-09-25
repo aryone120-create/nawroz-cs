@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import logo from '../assets/university-logo.png'
 import MouseMascot from '../components/MouseMascot'
 import PeekByte from '../components/PeekByte'
+import { WORLD_ICON_COMPONENTS } from '../components/WorldIcons'
+import { COPY, LANG_LABELS, RTL_LANGS, WORLD_NAMES, DEPARTMENT_URL, type Lang } from '../i18n'
 
 /* ── Palette: deep-space blue, no gold ── */
 const VOID = '#050D1A'
@@ -14,31 +16,6 @@ const INK = 'rgba(255,255,255,0.62)'
 const display = "'Sora', sans-serif"
 const body = "'Inter', sans-serif"
 const mono = "'JetBrains Mono', monospace"
-
-/* Six worlds — mirrors the poster exactly */
-const worlds = [
-  { icon: '🤖', name: 'Artificial Intelligence', line: 'Think. Predict. Automate.', long: 'Train neural networks and build systems that see, understand, and decide. The frontier everyone is racing toward — and you get there first.' },
-  { icon: '🎮', name: 'Game Design', line: 'Build worlds people play in.', long: 'Design characters, physics, and universes. Turn imagination into interactive worlds that millions can step inside.' },
-  { icon: '🦾', name: 'Robotics', line: 'Machines that move and sense.', long: 'Give hardware a brain. Program machines that perceive their surroundings and act on their own.' },
-  { icon: '🌐', name: 'Web Development', line: 'Power the internet.', long: 'Build the platforms the world lives on. From idea to a site used across the planet in an afternoon.' },
-  { icon: '📱', name: 'Mobile Apps', line: 'A billion pockets, your idea.', long: 'Ship apps that live in people’s hands every day. Your creation, everywhere they go.' },
-  { icon: '🖥️', name: 'Desktop Software', line: 'Tools the world relies on.', long: 'Engineer the powerful software professionals depend on to get real work done.' },
-]
-
-const reasons = [
-  { k: '01', t: 'You create, not memorize', d: 'Medicine asks you to memorize what already exists. We hand you the tools to build what doesn’t exist yet — and let you decide what the future looks like.' },
-  { k: '02', t: 'Your classroom has no borders', d: 'A laptop is your lab. Study, build, and work from Duhok, from home, or from anywhere on Earth. Your world isn’t confined to one building.' },
-  { k: '03', t: 'One field powers every other', d: 'Hospitals, banks, farms, films, phones — all run on code. Choose CS and you don’t compete with one industry, you become essential to all of them.' },
-  { k: '04', t: 'You start building on day one', d: 'No waiting years to touch real work. From your first semester you’re making apps, games, and intelligent systems that actually run.' },
-]
-
-const faqs = [
-  { q: 'Do I need coding experience to start?', a: 'None at all. We start from zero. What we look for is curiosity and the willingness to build — the rest, we teach you, step by step.' },
-  { q: 'What language are courses taught in?', a: 'Courses are taught in Kurdish and English. Programming is naturally an English-literate craft, and we build that skill with you as you go — a lasting advantage in itself.' },
-  { q: 'How is this different from the medical programs?', a: 'Different worlds entirely. CS is about creating and inventing rather than memorizing. It is a four-year Bachelor’s degree, and your work is not tied to a single place or profession.' },
-  { q: 'Who teaches the courses?', a: 'Experienced professionals who have built real software and systems — people who bring the practice of the field, not only its theory, into the room.' },
-  { q: 'What can I actually build here?', a: 'AI models, video games, robots, websites, mobile apps, and desktop software. Six worlds, one department — you choose which to master.' },
-]
 
 /* Reveal-on-scroll */
 function useReveal<T extends HTMLElement>() {
@@ -74,9 +51,16 @@ function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }
 }
 
 export default function Website() {
+  const [lang, setLang] = useState<Lang>('ku')
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [active, setActive] = useState(0)
+  const [hoveredWorld, setHoveredWorld] = useState<number | null>(null)
   const [scrollY, setScrollY] = useState(0)
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const t = COPY[lang]
+  const rtl = RTL_LANGS.includes(lang)
+  const langFont = rtl ? "'Noto Kufi Arabic', 'Tahoma', sans-serif" : body
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY)
@@ -84,8 +68,14 @@ export default function Website() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  /* keep <html lang/dir> in sync so screen readers, fonts and browser UI follow the chosen language */
+  useEffect(() => {
+    document.documentElement.lang = lang
+    document.documentElement.dir = rtl ? 'rtl' : 'ltr'
+  }, [lang, rtl])
+
   return (
-    <div style={{ fontFamily: body, background: VOID, color: '#fff', minHeight: '100vh', overflowX: 'hidden' }}>
+    <div dir={rtl ? 'rtl' : 'ltr'} style={{ fontFamily: langFont, background: VOID, color: '#fff', minHeight: '100vh', overflowX: 'hidden' }}>
       <style>{`
         @keyframes drift { from { transform: translateY(0) } to { transform: translateY(-40px) } }
         @keyframes twinkle { 0%,100% { opacity: .25 } 50% { opacity: .9 } }
@@ -104,13 +94,28 @@ export default function Website() {
         .cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(14,165,233,.45); }
         .ghost { transition: background .25s, border-color .25s; }
         .ghost:hover { background: rgba(56,189,248,.10); border-color: rgba(56,189,248,.6) !important; }
+        .langbtn { transition: background .2s, color .2s; }
+        .icon-tile {
+          width: 96px; height: 96px; border-radius: 20px; display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(155deg, rgba(56,189,248,0.14), rgba(14,165,233,0.04));
+          border: 1px solid rgba(56,189,248,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+          transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .35s, background .35s;
+        }
+        .wcard:hover .icon-tile { transform: translateY(-4px) scale(1.04); border-color: rgba(56,189,248,0.5); background: linear-gradient(155deg, rgba(56,189,248,0.22), rgba(14,165,233,0.06)); }
+        .menu-btn { display: none; }
+        .mobile-menu { display: none; }
         @media (max-width: 900px) {
           .why-grid { grid-template-columns: 1fr !important; }
           .join-grid { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 680px) {
           .nav-links { display: none !important; }
+          .lang-switcher { display: none !important; }
+          .nav-cta, .nav-poster { display: none !important; }
+          .menu-btn { display: flex !important; }
+          .mobile-menu { display: flex !important; }
         }
+        @keyframes menu-drop { from { opacity: 0; transform: translateY(-10px) } to { opacity: 1; transform: none } }
         /* Touch / no-hover devices: reveal card details permanently since hover can't fire */
         @media (hover: none), (max-width: 768px) {
           .wlong { max-height: 240px !important; opacity: 1 !important; margin-top: 12px !important; }
@@ -138,7 +143,7 @@ export default function Website() {
 
       {/* ── NAV ── */}
       <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(5,13,26,0.72)', backdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(56,189,248,0.15)' }}>
-        <div style={{ maxWidth: 1180, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 68 }}>
+        <div style={{ maxWidth: 1180, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 68, gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <img src={logo} alt="Nawroz University" style={{ height: 40, width: 40, objectFit: 'contain', borderRadius: '50%', background: '#fff', padding: 3 }} />
             <div>
@@ -148,13 +153,62 @@ export default function Website() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              {[['Worlds', 'worlds'], ['Byte', 'byte'], ['Why CS', 'why'], ['FAQ', 'faq'], ['Find Us', 'join']].map(([l, id]) => (
+              {[[t.nav.worlds, 'worlds'], [t.nav.byte, 'byte'], [t.nav.why, 'why'], [t.nav.faq, 'faq'], [t.nav.join, 'join']].map(([l, id]) => (
                 <a key={id} href={`#${id}`} className="navlink" style={{ color: 'rgba(255,255,255,0.72)', textDecoration: 'none', padding: '8px 12px', fontSize: 13.5, fontWeight: 500 }}>{l}</a>
               ))}
             </div>
-            <a href="#join" className="cta" style={{ marginLeft: 10, padding: '9px 16px', background: `linear-gradient(90deg, ${BLUE_DARK}, ${BLUE})`, color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap' }}>Find Our Table</a>
+            {/* language switcher */}
+            <div className="lang-switcher" style={{ display: 'flex', alignItems: 'center', gap: 2, marginLeft: 8, padding: 3, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10 }}>
+              {(['ku', 'ar', 'en'] as Lang[]).map((l) => (
+                <button key={l} onClick={() => setLang(l)} className="langbtn" style={{
+                  padding: '6px 10px', borderRadius: 7, border: 'none', cursor: 'pointer',
+                  fontFamily: mono, fontSize: 11.5, fontWeight: 700,
+                  background: lang === l ? BLUE : 'transparent',
+                  color: lang === l ? '#04101f' : 'rgba(255,255,255,0.6)',
+                }}>{LANG_LABELS[l]}</button>
+              ))}
+            </div>
+            <a href="#join" className="cta nav-cta" style={{ marginLeft: 6, padding: '9px 16px', background: `linear-gradient(90deg, ${BLUE_DARK}, ${BLUE})`, color: '#fff', borderRadius: 10, textDecoration: 'none', fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap' }}>{t.nav.cta}</a>
+            <a href="#/poster" className="ghost nav-poster" style={{ marginLeft: 6, padding: '9px 14px', background: 'transparent', color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, textDecoration: 'none', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap' }}>{t.nav.poster}</a>
+            {/* mobile hamburger */}
+            <button
+              className="menu-btn"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Menu"
+              style={{
+                marginLeft: 6, width: 40, height: 40, borderRadius: 10, border: '1px solid rgba(255,255,255,0.15)',
+                background: menuOpen ? 'rgba(56,189,248,0.15)' : 'transparent', cursor: 'pointer',
+                flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
+              }}
+            >
+              <span style={{ width: 18, height: 2, background: '#fff', borderRadius: 2, transition: 'transform .25s', transform: menuOpen ? 'translateY(6px) rotate(45deg)' : 'none' }} />
+              <span style={{ width: 18, height: 2, background: '#fff', borderRadius: 2, opacity: menuOpen ? 0 : 1, transition: 'opacity .2s' }} />
+              <span style={{ width: 18, height: 2, background: '#fff', borderRadius: 2, transition: 'transform .25s', transform: menuOpen ? 'translateY(-6px) rotate(-45deg)' : 'none' }} />
+            </button>
           </div>
         </div>
+        {menuOpen && (
+          <div className="mobile-menu" style={{
+            flexDirection: 'column', padding: '10px 24px 20px', gap: 4,
+            background: 'rgba(5,13,26,0.96)', borderTop: '1px solid rgba(56,189,248,0.15)',
+            animation: 'menu-drop .22s ease',
+          }}>
+            {[[t.nav.worlds, 'worlds'], [t.nav.byte, 'byte'], [t.nav.why, 'why'], [t.nav.faq, 'faq'], [t.nav.join, 'join']].map(([l, id]) => (
+              <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none', padding: '12px 4px', fontSize: 15, fontWeight: 500, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>{l}</a>
+            ))}
+            <a href="#/poster" onClick={() => setMenuOpen(false)} style={{ color: 'rgba(255,255,255,0.55)', textDecoration: 'none', padding: '12px 4px', fontSize: 14, fontWeight: 500 }}>{t.nav.poster}</a>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginTop: 12, padding: 3, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, alignSelf: 'flex-start' }}>
+              {(['ku', 'ar', 'en'] as Lang[]).map((l) => (
+                <button key={l} onClick={() => setLang(l)} className="langbtn" style={{
+                  padding: '7px 12px', borderRadius: 7, border: 'none', cursor: 'pointer',
+                  fontFamily: mono, fontSize: 12, fontWeight: 700,
+                  background: lang === l ? BLUE : 'transparent',
+                  color: lang === l ? '#04101f' : 'rgba(255,255,255,0.6)',
+                }}>{LANG_LABELS[l]}</button>
+              ))}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* ── HERO ── */}
@@ -166,34 +220,39 @@ export default function Website() {
         </div>
 
         <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', textAlign: 'center' }}>
-          <div style={{ fontFamily: "'Noto Kufi Arabic', sans-serif", direction: 'rtl', color: BLUE_GLOW, fontSize: 20, fontWeight: 700, marginBottom: 22, opacity: 0.9 }}>
-            جیهانا خۆ بنیات بکە
+          {/* prominent Computer Science wordmark — always visible on load, every language */}
+          <div style={{
+            fontFamily: mono, fontSize: 'clamp(13px, 1.6vw, 15px)', fontWeight: 800, letterSpacing: 3,
+            color: BLUE_GLOW, textTransform: 'uppercase', marginBottom: 14, textShadow: `0 0 24px rgba(56,189,248,0.5)`,
+          }}>
+            {t.hero.kicker}
           </div>
+
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 50, marginBottom: 26, fontFamily: mono, fontSize: 11, letterSpacing: 1.5, color: BLUE_GLOW }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: BLUE_GLOW, animation: 'pulse 2s infinite' }} />
-            WELCOME TO THE DIGITAL WORLD
+            {t.hero.badge}
           </div>
 
-          <h1 style={{ fontFamily: display, fontSize: 'clamp(44px, 7vw, 84px)', fontWeight: 800, lineHeight: 0.98, letterSpacing: -2, margin: '0 0 26px' }}>
-            We have a world of our own.<br />
-            <span style={{ background: `linear-gradient(90deg, ${BLUE_GLOW}, ${BLUE})`, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Come build yours inside it.</span>
+          <h1 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(40px, 6.4vw, 78px)', fontWeight: 800, lineHeight: 1.08, letterSpacing: rtl ? 0 : -2, margin: '0 0 26px' }}>
+            {t.hero.titleLine1}<br />
+            <span style={{ background: `linear-gradient(90deg, ${BLUE_GLOW}, ${BLUE})`, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t.hero.titleLine2}</span>
           </h1>
 
-          <p style={{ color: INK, fontSize: 'clamp(16px, 2vw, 19px)', lineHeight: 1.7, maxWidth: 600, margin: '0 auto 40px' }}>
-            Ours is the digital world — and here you don’t just enter it, you carve out your own place within it. While others memorize what already exists, you’ll create what doesn’t: artificial intelligence, games, robots, and the software that runs the planet.
+          <p style={{ color: INK, fontSize: 'clamp(16px, 2vw, 19px)', lineHeight: 1.8, maxWidth: 600, margin: '0 auto 40px' }}>
+            {t.hero.paragraph}
           </p>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="#worlds" className="cta" style={{ padding: '15px 32px', background: `linear-gradient(90deg, ${BLUE_DARK}, ${BLUE})`, color: '#fff', borderRadius: 12, textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>Enter our world →</a>
-            <a href="#why" className="ghost" style={{ padding: '15px 32px', background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.22)', borderRadius: 12, textDecoration: 'none', fontSize: 15, fontWeight: 600 }}>Why choose CS</a>
+            <a href="#worlds" className="cta" style={{ padding: '15px 32px', background: `linear-gradient(90deg, ${BLUE_DARK}, ${BLUE})`, color: '#fff', borderRadius: 12, textDecoration: 'none', fontSize: 15, fontWeight: 700 }}>{t.hero.ctaEnter} {rtl ? '←' : '→'}</a>
+            <a href="#why" className="ghost" style={{ padding: '15px 32px', background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.22)', borderRadius: 12, textDecoration: 'none', fontSize: 15, fontWeight: 600 }}>{t.hero.ctaWhy}</a>
           </div>
 
           {/* quiet metrics, no salary/employment */}
           <div style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', marginTop: 64 }}>
-            {[['6', 'worlds to master'], ['4', 'year Bachelor’s degree'], ['∞', 'places you can work from']].map(([n, l]) => (
+            {[['7', t.hero.stat0], ['4', t.hero.stat1], ['∞', t.hero.stat2]].map(([n, l]) => (
               <div key={l} style={{ textAlign: 'center' }}>
                 <div style={{ fontFamily: display, fontSize: 40, fontWeight: 800, color: BLUE_GLOW, lineHeight: 1 }}>{n}</div>
-                <div style={{ fontFamily: mono, fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 8, letterSpacing: 0.5 }}>{l}</div>
+                <div style={{ fontFamily: rtl ? langFont : mono, fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 8, letterSpacing: 0.5 }}>{l}</div>
               </div>
             ))}
           </div>
@@ -205,30 +264,41 @@ export default function Website() {
         <div style={{ maxWidth: 1180, margin: '0 auto' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
-              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>// WHAT YOU’LL LEARN</div>
-              <h2 style={{ fontFamily: display, fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: -1, margin: 0 }}>Six worlds. You’ll explore them all.</h2>
-              <p style={{ color: INK, fontSize: 16, maxWidth: 560, margin: '16px auto 0' }}>These aren’t separate tracks to choose between — every Computer Science student learns all six. One degree, six ways to build.</p>
+              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>{t.worlds.kicker}</div>
+              <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.worlds.title}</h2>
+              <p style={{ color: INK, fontSize: 16, maxWidth: 560, margin: '16px auto 0' }}>{t.worlds.subtitle}</p>
             </div>
           </Reveal>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
-            {worlds.map((w, i) => (
-              <Reveal key={i} delay={(i % 3) * 0.08}>
-                <div className="wcard" style={{
-                  background: 'rgba(14,165,233,0.05)', border: '1px solid rgba(56,189,248,0.18)',
-                  borderRadius: 18, padding: '26px 24px', height: '100%', position: 'relative', overflow: 'hidden',
-                }}>
-                  <div style={{ position: 'absolute', top: -30, right: -30, width: 110, height: 110, background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                    <span style={{ fontSize: 40 }}>{w.icon}</span>
-                    <span style={{ fontFamily: mono, fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>{String(i + 1).padStart(2, '0')}</span>
+            {WORLD_NAMES.map((name, i) => {
+              const w = t.worlds.items[i]
+              return (
+                <Reveal key={i} delay={(i % 3) * 0.08}>
+                  <div
+                    className="wcard"
+                    onMouseEnter={() => setHoveredWorld(i)}
+                    onMouseLeave={() => setHoveredWorld((h) => (h === i ? null : h))}
+                    onTouchStart={() => setHoveredWorld(i)}
+                    style={{
+                      background: 'rgba(14,165,233,0.05)', border: '1px solid rgba(56,189,248,0.18)',
+                      borderRadius: 18, padding: '26px 24px', height: '100%', position: 'relative', overflow: 'hidden',
+                    }}>
+                    <div style={{ position: 'absolute', top: -30, right: -30, width: 110, height: 110, background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
+                      <div className="icon-tile">
+                        {(() => { const Icon = WORLD_ICON_COMPONENTS[i]; return <Icon on={hoveredWorld === i} /> })()}
+                      </div>
+                      <span style={{ fontFamily: mono, fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 4 }}>{String(i + 1).padStart(2, '0')}</span>
+                    </div>
+                    {/* world name always English, per department decision */}
+                    <div style={{ fontFamily: display, fontSize: 20, fontWeight: 700, marginBottom: 6, direction: 'ltr', textAlign: rtl ? 'right' : 'left' }}>{name}</div>
+                    <div style={{ color: BLUE_GLOW, fontSize: 14, fontWeight: 500 }}>{w.line}</div>
+                    <div className="wlong" style={{ color: INK, fontSize: 13.5, lineHeight: 1.65 }}>{w.long}</div>
                   </div>
-                  <div style={{ fontFamily: display, fontSize: 20, fontWeight: 700, marginBottom: 6 }}>{w.name}</div>
-                  <div style={{ color: BLUE_GLOW, fontSize: 14, fontWeight: 500 }}>{w.line}</div>
-                  <div className="wlong" style={{ color: INK, fontSize: 13.5, lineHeight: 1.65 }}>{w.long}</div>
-                </div>
-              </Reveal>
-            ))}
+                </Reveal>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -238,10 +308,10 @@ export default function Website() {
         <div style={{ maxWidth: 820, margin: '0 auto' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 40 }}>
-              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>// MEET THE DEPARTMENT</div>
-              <h2 style={{ fontFamily: display, fontSize: 'clamp(30px, 4.5vw, 48px)', fontWeight: 800, letterSpacing: -1, margin: 0 }}>This is Byte. 🐭</h2>
+              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>{t.byte.kicker}</div>
+              <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(30px, 4.5vw, 48px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.byte.title}</h2>
               <p style={{ color: INK, fontSize: 16, maxWidth: 520, margin: '16px auto 0' }}>
-                Our little mascot runs on network cables and pure curiosity — just like us. Go on, bother her a little.
+                {t.byte.subtitle}
               </p>
             </div>
           </Reveal>
@@ -256,23 +326,23 @@ export default function Website() {
         <div style={{ maxWidth: 1080, margin: '0 auto' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
-              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>// WHY THIS, NOT THAT</div>
-              <h2 style={{ fontFamily: display, fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: -1, margin: 0 }}>Four reasons to build instead of memorize.</h2>
+              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>{t.why.kicker}</div>
+              <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.why.title}</h2>
             </div>
           </Reveal>
 
           <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 340px) 1fr', gap: 40, alignItems: 'start' }}>
             {/* selector */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {reasons.map((r, i) => (
+              {t.why.reasons.map((r, i) => (
                 <button key={i} onClick={() => setActive(i)} style={{
-                  textAlign: 'left', cursor: 'pointer', padding: '16px 18px', borderRadius: 14,
+                  textAlign: rtl ? 'right' : 'left', cursor: 'pointer', padding: '16px 18px', borderRadius: 14,
                   background: active === i ? 'rgba(14,165,233,0.12)' : 'transparent',
                   border: `1px solid ${active === i ? 'rgba(56,189,248,0.45)' : 'rgba(255,255,255,0.08)'}`,
                   color: '#fff', display: 'flex', gap: 14, alignItems: 'center', transition: 'all .25s',
                 }}>
-                  <span style={{ fontFamily: mono, fontSize: 13, color: active === i ? BLUE_GLOW : 'rgba(255,255,255,0.3)' }}>{r.k}</span>
-                  <span style={{ fontFamily: display, fontSize: 16, fontWeight: 600 }}>{r.t}</span>
+                  <span style={{ fontFamily: mono, fontSize: 13, color: active === i ? BLUE_GLOW : 'rgba(255,255,255,0.3)' }}>{String(i + 1).padStart(2, '0')}</span>
+                  <span style={{ fontFamily: rtl ? langFont : display, fontSize: 16, fontWeight: 600 }}>{r.t}</span>
                 </button>
               ))}
             </div>
@@ -281,9 +351,9 @@ export default function Website() {
               <div style={{ position: 'absolute', bottom: -60, right: -60, width: 220, height: 220, background: 'radial-gradient(circle, rgba(14,165,233,0.16) 0%, transparent 70%)', pointerEvents: 'none' }} />
               <div key={active} style={{ animation: 'fadeSlide .5s ease' }}>
                 <style>{`@keyframes fadeSlide { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:none } }`}</style>
-                <div style={{ fontFamily: mono, fontSize: 48, fontWeight: 700, color: 'rgba(56,189,248,0.25)', lineHeight: 1 }}>{reasons[active].k}</div>
-                <h3 style={{ fontFamily: display, fontSize: 28, fontWeight: 700, margin: '14px 0 16px', letterSpacing: -0.5 }}>{reasons[active].t}</h3>
-                <p style={{ color: 'rgba(255,255,255,0.72)', fontSize: 17, lineHeight: 1.75, margin: 0 }}>{reasons[active].d}</p>
+                <div style={{ fontFamily: mono, fontSize: 48, fontWeight: 700, color: 'rgba(56,189,248,0.25)', lineHeight: 1 }}>{String(active + 1).padStart(2, '0')}</div>
+                <h3 style={{ fontFamily: rtl ? langFont : display, fontSize: 28, fontWeight: 700, margin: '14px 0 16px', letterSpacing: rtl ? 0 : -0.5 }}>{t.why.reasons[active].t}</h3>
+                <p style={{ color: 'rgba(255,255,255,0.72)', fontSize: 17, lineHeight: 1.8, margin: 0 }}>{t.why.reasons[active].d}</p>
               </div>
             </div>
           </div>
@@ -300,11 +370,11 @@ export default function Website() {
           }}>
             <div style={{ position: 'absolute', top: -80, left: '50%', marginLeft: -200, width: 400, height: 400, background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
             <div style={{ fontSize: 44, marginBottom: 16 }}>🌍</div>
-            <h2 style={{ fontFamily: display, fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: 800, letterSpacing: -1, margin: '0 0 14px' }}>
-              Your classroom has no walls. Your career has no map.
+            <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: '0 0 14px' }}>
+              {t.banner.title}
             </h2>
             <p style={{ color: INK, fontSize: 17, lineHeight: 1.7, maxWidth: 620, margin: '0 auto' }}>
-              Build from Duhok, from home, or from the other side of the world. In our world, where you are never decides what you can create.
+              {t.banner.text}
             </p>
           </div>
         </Reveal>
@@ -315,19 +385,19 @@ export default function Website() {
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <Reveal>
             <div style={{ textAlign: 'center', marginBottom: 48 }}>
-              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>// BEFORE YOU DECIDE</div>
-              <h2 style={{ fontFamily: display, fontSize: 'clamp(32px, 4.5vw, 48px)', fontWeight: 800, letterSpacing: -1, margin: 0 }}>Questions, answered.</h2>
+              <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 14 }}>{t.faq.kicker}</div>
+              <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(32px, 4.5vw, 48px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1, margin: 0 }}>{t.faq.title}</h2>
             </div>
           </Reveal>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {faqs.map((f, i) => (
+            {t.faq.items.map((f, i) => (
               <div key={i} style={{ background: 'rgba(8,20,38,0.6)', border: `1px solid ${openFaq === i ? 'rgba(56,189,248,0.4)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 14, overflow: 'hidden', transition: 'border-color .25s' }}>
-                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{ width: '100%', padding: '20px 24px', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
-                  <span style={{ fontFamily: display, fontSize: 16, fontWeight: 600, color: '#fff' }}>{f.q}</span>
+                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{ width: '100%', padding: '20px 24px', textAlign: rtl ? 'right' : 'left', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+                  <span style={{ fontFamily: rtl ? langFont : display, fontSize: 16, fontWeight: 600, color: '#fff' }}>{f.q}</span>
                   <span style={{ fontSize: 24, color: BLUE_GLOW, flexShrink: 0, transition: 'transform .25s', transform: openFaq === i ? 'rotate(45deg)' : 'none' }}>+</span>
                 </button>
-                <div style={{ maxHeight: openFaq === i ? 240 : 0, overflow: 'hidden', transition: 'max-height .4s ease' }}>
-                  <p style={{ padding: '0 24px 22px', fontSize: 15, color: INK, lineHeight: 1.75, margin: 0 }}>{f.a}</p>
+                <div style={{ maxHeight: openFaq === i ? 260 : 0, overflow: 'hidden', transition: 'max-height .4s ease' }}>
+                  <p style={{ padding: '0 24px 22px', fontSize: 15, color: INK, lineHeight: 1.8, margin: 0 }}>{f.a}</p>
                 </div>
               </div>
             ))}
@@ -345,29 +415,43 @@ export default function Website() {
           }}>
             <div style={{ position: 'absolute', top: -90, left: '50%', marginLeft: -220, width: 440, height: 440, background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-            <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 18, position: 'relative' }}>// COME SAY HELLO</div>
+            <div style={{ fontFamily: mono, fontSize: 12, color: BLUE, letterSpacing: 2, marginBottom: 18, position: 'relative' }}>{t.join.kicker}</div>
 
-            <h2 style={{ fontFamily: display, fontSize: 'clamp(30px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: -1.2, margin: '0 0 20px', position: 'relative', lineHeight: 1.05 }}>
-              Let’s build your future,<br />
-              <span style={{ background: `linear-gradient(90deg, ${BLUE_GLOW}, ${BLUE})`, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>together.</span>
+            <h2 style={{ fontFamily: rtl ? langFont : display, fontSize: 'clamp(30px, 4.5vw, 52px)', fontWeight: 800, letterSpacing: rtl ? 0 : -1.2, margin: '0 0 20px', position: 'relative', lineHeight: 1.15 }}>
+              {t.join.titleLine1}<br />
+              <span style={{ background: `linear-gradient(90deg, ${BLUE_GLOW}, ${BLUE})`, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t.join.titleHighlight}</span>
             </h2>
 
-            <p style={{ color: INK, fontSize: 'clamp(15px, 2vw, 18px)', lineHeight: 1.75, maxWidth: 560, margin: '0 auto 36px', position: 'relative' }}>
-              Behind this table is a family that codes, creates, and dreams as one. Bring your curiosity — we’ll bring the tools, the mentors, and a place where you truly belong. Your world in Computer Science begins the moment you say hello.
+            <p style={{ color: INK, fontSize: 'clamp(15px, 2vw, 18px)', lineHeight: 1.8, maxWidth: 560, margin: '0 auto 36px', position: 'relative' }}>
+              {t.join.paragraph}
             </p>
 
-            {/* the table marker */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 16, padding: '18px 28px', borderRadius: 18, background: `linear-gradient(90deg, ${BLUE_DARK}, ${BLUE})`, boxShadow: '0 12px 50px rgba(14,165,233,0.4)', position: 'relative', marginBottom: 40 }}>
+            {/* the table marker — now links to the real department page */}
+            <a
+              href={DEPARTMENT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cta"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 16, padding: '18px 28px', borderRadius: 18,
+                background: `linear-gradient(90deg, ${BLUE_DARK}, ${BLUE})`, boxShadow: '0 12px 50px rgba(14,165,233,0.4)',
+                position: 'relative', marginBottom: 18, textDecoration: 'none', color: '#fff',
+              }}
+            >
               <span style={{ fontSize: 30 }}>🎓</span>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: 1, color: 'rgba(255,255,255,0.8)' }}>FIND US AT ADMISSION</div>
-                <div style={{ fontFamily: display, fontSize: 19, fontWeight: 800 }}>The Computer Science table</div>
+              <div style={{ textAlign: rtl ? 'right' : 'left' }}>
+                <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: 1, color: 'rgba(255,255,255,0.8)' }}>{t.join.tableKicker}</div>
+                <div style={{ fontFamily: rtl ? langFont : display, fontSize: 19, fontWeight: 800 }}>{t.join.tableTitle}</div>
               </div>
+              <span style={{ fontSize: 20, opacity: 0.85, marginInlineStart: 4 }}>↗</span>
+            </a>
+            <div style={{ marginBottom: 30 }}>
+              <a href={DEPARTMENT_URL} target="_blank" rel="noopener noreferrer" style={{ color: BLUE_GLOW, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>{t.join.linkLabel}</a>
             </div>
 
             {/* quick facts */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 28, justifyContent: 'center', position: 'relative' }}>
-              {[['🖥️', 'College of Science'], ['🎓', '4-Year Bachelor’s Degree'], ['🌍', 'Build from anywhere'], ['🚀', 'No experience needed']].map(([ic, l]) => (
+              {[['🖥️', t.join.facts[0]], ['🎓', t.join.facts[1]], ['🌍', t.join.facts[2]], ['🚀', t.join.facts[3]]].map(([ic, l]) => (
                 <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>
                   <span style={{ fontSize: 18 }}>{ic}</span>{l}
                 </div>
@@ -383,13 +467,13 @@ export default function Website() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <img src={logo} alt="Nawroz University" style={{ height: 36, width: 36, objectFit: 'contain', borderRadius: '50%', background: '#fff', padding: 3 }} />
             <div>
-              <div style={{ fontFamily: display, fontWeight: 700, fontSize: 14 }}>Dept. of Computer Science</div>
-              <div style={{ fontFamily: mono, fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: 0.5 }}>NAWROZ UNIVERSITY · COLLEGE OF SCIENCE · DUHOK</div>
+              <div style={{ fontFamily: rtl ? langFont : display, fontWeight: 700, fontSize: 14 }}>{t.footer.deptName}</div>
+              <div style={{ fontFamily: rtl ? langFont : mono, fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: 0.5 }}>{t.footer.tagline}</div>
             </div>
           </div>
-          <a href="#join" className="navlink" style={{ color: BLUE_GLOW, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>Find Our Table →</a>
+          <a href={DEPARTMENT_URL} target="_blank" rel="noopener noreferrer" className="navlink" style={{ color: BLUE_GLOW, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>{t.footer.findTable}</a>
         </div>
-        <div style={{ maxWidth: 1180, margin: '18px auto 0', color: 'rgba(255,255,255,0.3)', fontSize: 12, fontFamily: mono }}>© 2025 Nawroz University · We have a world of our own — come build yours inside it.</div>
+        <div style={{ maxWidth: 1180, margin: '18px auto 0', color: 'rgba(255,255,255,0.3)', fontSize: 12, fontFamily: rtl ? langFont : mono }}>{t.footer.copyright}</div>
       </footer>
 
       {/* shy Byte peeking from the corner */}

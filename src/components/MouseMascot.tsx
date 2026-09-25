@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 const display = "'Sora', -apple-system, sans-serif";
 
@@ -18,6 +18,9 @@ const R: Record<string, { mood: Mood; lines: string[] }> = {
   cable: { mood: 'happy', lines: ['Crunchy Cat-6… 10 Gbps of pure flavour! 🔌', 'Low-latency snack of champions.'] },
   pet: { mood: 'love', lines: ['Awww 💙 Petting loop initialised! Best dev partner ever.', 'Happiness level: O(1).'] },
   wake: { mood: 'surprised', lines: ['zzz… huh?! I was compiling in the background.', 'Waking from sleep state… ready!'] },
+  ram: { mood: 'happy', lines: ['Squeak! Nibbled +16GB of raw bandwidth 🐭⚡', 'Crunchy DDR5 — my favourite byte-sized snack!', 'Mmm, dual-channel flavour.'] },
+  floppy: { mood: 'love', lines: ['Ooh, a vintage cracker! 1.44MB of pure crunch. 🐭💾', 'They don’t make snacks this crispy anymore.', 'Read-only, but so tasty.'] },
+  hub: { mood: 'surprised', lines: ['Chewed clean through 24 ports of uplink! 🐭🌐', 'Mmm, gigabit-flavoured plastic.', 'Careful — that one was still blinking!'] },
 };
 
 function pick(arr: string[]) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -65,7 +68,7 @@ export default function ByteMascot() {
   const react = (key: keyof typeof R) => {
     if (mood === 'sleepy' && key !== 'body') { nudge(R.wake.mood, pick(R.wake.lines)); return; }
     const r = R[key]; nudge(r.mood, pick(r.lines));
-    if (key === 'pet') setTamed(true);
+    setTamed(true);
   };
 
   const hit = (key: keyof typeof R) => (e: React.MouseEvent) => {
@@ -114,24 +117,74 @@ export default function ByteMascot() {
         </div>
       </div>
 
-      {/* controls */}
+      {/* controls — hardware snacks Byte can nibble on */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-        {[
-          [tamed ? '💙' : '✨', tamed ? 'Love on Byte' : 'Tame Byte', () => react('pet')],
-          ['🧀', 'High-RAM Cheese', () => { setTamed(true); nudge('love', 'Yum! +16GB DDR5 cheese received! 🧀'); }],
-          [cableOut ? '🔌' : '✂️', cableOut ? 'Plug cable back' : 'Unseat cable', pullCable],
-          ['😴', 'Low-power mode', () => nudge('sleepy', 'Entering suspend-to-RAM mode… zzz')],
-        ].map(([icon, label, action]) => (
-          <button key={label as string} onClick={action as () => void} className="byte-action-btn">
-            <span style={{ fontSize: 15 }}>{icon as string}</span><span>{label as string}</span>
+        {(
+          [
+            { icon: cableOut ? <PlugIcon /> : <CableIcon />, label: cableOut ? 'Plug cable back' : 'Unseat cable', action: pullCable },
+            { icon: <RamIcon />, label: 'Snack: RAM stick', action: () => react('ram') },
+            { icon: <FloppyIcon />, label: 'Snack: Floppy disk', action: () => react('floppy') },
+            { icon: <HubIcon />, label: 'Snack: Network hub', action: () => react('hub') },
+          ] as { icon: ReactNode; label: string; action: () => void }[]
+        ).map(({ icon, label, action }) => (
+          <button key={label} onClick={action} className="byte-action-btn">
+            <span style={{ display: 'inline-flex', width: 16, height: 16 }}>{icon}</span>
+            <span>{label}</span>
           </button>
         ))}
       </div>
       <div style={{ fontFamily: display, fontSize: 12, color: 'rgba(255,255,255,0.42)', textAlign: 'center' }}>
-        click her eyes, ears, nose, cheeks, tummy, tail, paws or cable — each reacts differently 🐭
+        click her eyes, ears, nose, cheeks, tummy, tail, paws — or feed her the hardware below 🐭
       </div>
     </div>
   );
+}
+
+/* ── tiny line-icons for the snack buttons, matching the site's blue palette ── */
+function CableIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+      <path d="M4 6 Q13 10 20 18" stroke="#7DD3FC" strokeWidth="2.4" strokeLinecap="round" />
+      <rect x="17" y="14" width="6" height="6" rx="1" fill="#38BDF8" />
+    </svg>
+  )
+}
+function PlugIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+      <path d="M4 6 Q13 10 18 16" stroke="#F87171" strokeWidth="2.4" strokeLinecap="round" strokeDasharray="1 4" />
+    </svg>
+  )
+}
+function RamIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+      <rect x="3" y="4" width="18" height="12" rx="1.5" fill="none" stroke="#7DD3FC" strokeWidth="1.6" />
+      <rect x="5.5" y="6.5" width="2.4" height="4.5" fill="#38BDF8" />
+      <rect x="9.5" y="6.5" width="2.4" height="4.5" fill="#38BDF8" />
+      <rect x="13.5" y="6.5" width="2.4" height="4.5" fill="#38BDF8" />
+      <rect x="17.5" y="6.5" width="1.6" height="4.5" fill="#38BDF8" />
+      {[4, 6, 8, 10, 12, 14, 16, 18, 20].map((x) => <rect key={x} x={x} y="16" width="1" height="3" fill="#94A3B8" />)}
+    </svg>
+  )
+}
+function FloppyIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+      <path d="M4 4h13l3 3v13H4z" fill="none" stroke="#7DD3FC" strokeWidth="1.6" strokeLinejoin="round" />
+      <rect x="7.5" y="4" width="7" height="6" fill="#38BDF8" />
+      <rect x="7" y="14" width="10" height="6" rx="0.5" fill="none" stroke="#94A3B8" strokeWidth="1.2" />
+    </svg>
+  )
+}
+function HubIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+      <rect x="3" y="8" width="18" height="8" rx="1.5" fill="none" stroke="#7DD3FC" strokeWidth="1.6" />
+      {[6, 9.5, 13, 16.5].map((x, i) => <circle key={x} cx={x} cy="12" r="1" fill={i % 2 === 0 ? '#34D399' : '#38BDF8'} />)}
+      <path d="M8 8V5M14 8V5" stroke="#94A3B8" strokeWidth="1.2" />
+    </svg>
+  )
 }
 
 /* ══════════════════════════════════════════════════════════════════

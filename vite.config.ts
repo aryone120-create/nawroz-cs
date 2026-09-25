@@ -3,7 +3,12 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 
-import siteConfiguration from './.figma/make/site.json'
+import { existsSync } from 'node:fs'
+import { createRequire } from 'node:module'
+const _require = createRequire(import.meta.url)
+const siteConfiguration = existsSync('./.figma/make/site.json')
+  ? _require('./.figma/make/site.json')
+  : {}
 
 
 // Vite config — https://vitejs.dev/config/

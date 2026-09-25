@@ -2,17 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import { HighEndByteSvg, type Mood } from './MouseMascot'
 
 /* ── Peeking Byte ──
-   The SAME mouse as the section mascot, peeking over the bottom edge of the
-   screen — you only see her down to the nose, like someone watching you over
-   a wall. The wall spans the full width and its top is the screen's edge.
+   The SAME mouse as the section mascot, peeking up from the true bottom edge
+   of the screen (mobile and desktop alike) — no wall, no ledge, just cropped
+   by the screen edge itself, like she's climbing up into view.
    Eyes follow the cursor; come near and she perks up. Scroll away from her
    section and she gets sad and asks you to stay. */
 
 const display = "'Sora', sans-serif"
 
-const WIN_H = 108     // how much of the head shows above the wall
-const SHIFT_Y = -12   // frame the head so we crop right at the nose
-const WALL_H = 34
+const WIN_H = 108        // how much of the head shows above the screen edge
+const SHIFT_Y = -12      // frame the head so we crop right at the nose
+const EDGE_OVERLAP = 10  // she sits slightly past the true edge so she's flush, not floating above it
 
 export default function PeekByte() {
   const winRef = useRef<HTMLDivElement>(null)
@@ -96,7 +96,7 @@ export default function PeekByte() {
 
       {/* invite bubble */}
       <div style={{
-        position: 'absolute', bottom: WALL_H + WIN_H + 6, left: Math.max(12, headLeft - 8),
+        position: 'absolute', bottom: WIN_H - EDGE_OVERLAP + 10, left: Math.max(12, headLeft - 8),
         width: 'max-content', maxWidth: 'min(236px, 82vw)',
         background: '#fff', color: '#0b1a30', padding: '11px 15px', borderRadius: 16,
         fontFamily: display, fontSize: 13.5, fontWeight: 700, lineHeight: 1.35,
@@ -107,10 +107,11 @@ export default function PeekByte() {
         <span style={{ position: 'absolute', left: 40, bottom: -6, width: 13, height: 13, background: '#fff', transform: 'rotate(45deg)', borderRadius: 2 }} />
       </div>
 
-      {/* the head, peeking over the wall — cropped to the nose */}
+      {/* the head, flush with the true screen edge — no wall, no ledge */}
       <div ref={winRef} onClick={goToByte} style={{
-        position: 'absolute', bottom: WALL_H - 3, left: headLeft, zIndex: 2,
+        position: 'absolute', bottom: -EDGE_OVERLAP, left: headLeft, zIndex: 2,
         width: svgW, height: WIN_H, overflow: 'hidden', cursor: 'pointer', pointerEvents: 'auto',
+        filter: 'drop-shadow(0 10px 18px rgba(0,0,0,0.35))',
         animation: 'peek-rise .6s cubic-bezier(.55,0,.35,1.3), peek-bob 4s ease-in-out infinite',
       }}>
         <div style={{ width: svgW, transform: `translateY(${SHIFT_Y}px)` }}>
@@ -118,18 +119,11 @@ export default function PeekByte() {
         </div>
       </div>
 
-      {/* the wall — spans the full screen width, its top edge is the screen edge */}
+      {/* thin invisible click-catcher along the true edge — no visible wall */}
       <div onClick={goToByte} style={{
-        position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 3, height: WALL_H,
-        background: 'linear-gradient(180deg, #0f2947 0%, #0a1a30 60%, #06101f 100%)',
-        borderTop: '2px solid rgba(56,189,248,0.55)',
-        boxShadow: '0 -8px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08)',
+        position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 1, height: 28,
         cursor: 'pointer', pointerEvents: 'auto',
-      }}>
-        {/* little paws gripping the ledge */}
-        <span style={{ position: 'absolute', top: -7, left: headLeft + 30, width: 28, height: 14, borderRadius: '10px 10px 4px 4px', background: 'linear-gradient(180deg,#F1F5F9,#CBD5E1)', border: '1px solid #94A3B8', boxShadow: '0 2px 5px rgba(0,0,0,0.35)' }} />
-        <span style={{ position: 'absolute', top: -7, left: headLeft + svgW - 58, width: 28, height: 14, borderRadius: '10px 10px 4px 4px', background: 'linear-gradient(180deg,#F1F5F9,#CBD5E1)', border: '1px solid #94A3B8', boxShadow: '0 2px 5px rgba(0,0,0,0.35)' }} />
-      </div>
+      }} />
     </div>
   )
 }
