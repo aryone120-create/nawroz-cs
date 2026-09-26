@@ -71,7 +71,7 @@ export async function downloadWordDoc() {
         },
       },
       children: [
-        new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 0, after: 60 }, children: [new TextRun({ text: 'NAWROZ UNIVERSITY  ·  DUHOK  ·  KURDISTAN REGION', size: 18, color: GOLD, bold: true })] }),
+        new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 0, after: 60 }, children: [new TextRun({ text: 'NAWROZ UNIVERSITY  ·  COLLEGE OF SCIENCE', size: 18, color: GOLD, bold: true })] }),
         new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 0, after: 60 }, children: [new TextRun({ text: 'College of Science', size: 24, color: NAVY, bold: true })] }),
         rule(),
         new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 160, after: 40 }, children: [new TextRun({ text: 'COMPUTER SCIENCE', bold: true, size: 88, color: NAVY })] }),

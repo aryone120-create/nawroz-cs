@@ -3,7 +3,15 @@ export type Lang = 'en' | 'ku' | 'ar'
 export const LANG_LABELS: Record<Lang, string> = { en: 'EN', ku: 'کوردی', ar: 'العربية' }
 export const RTL_LANGS: Lang[] = ['ku', 'ar']
 
-/* World names are intentionally kept in English across all languages. */
+export const DEPARTMENT_URL = 'https://nawroz.edu.krd/departments/department-of-computer-science'
+export const UNIVERSITY_URL = 'https://nawroz.edu.krd/'
+export const MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=Nawroz+University'
+export const PHONE = '+964 750 567 4944'
+export const PHONE_HREF = 'tel:+9647505674944'
+/* official address, as published on nawroz.edu.krd */
+export const ADDRESS = 'Tanahi Quarter, Duhok – Kurdistan Region of Iraq · P.O. Box 77'
+
+/* World names stay in English in every language (department decision). */
 export const WORLD_NAMES = [
   'Artificial Intelligence',
   'Game Design',
@@ -14,21 +22,22 @@ export const WORLD_NAMES = [
   'Network & Data Security',
 ]
 
-interface WorldCopy { line: string; long: string }
+interface WorldCopy { local?: string; text: string }
 interface ReasonCopy { t: string; d: string }
 interface FaqCopy { q: string; a: string }
 
 export interface SiteCopy {
-  nav: { worlds: string; byte: string; why: string; faq: string; join: string; cta: string; poster: string }
+  brand: { name: string; sub: string }
+  nav: { worlds: string; byte: string; why: string; faq: string; menu: string }
   hero: {
-    kicker: string
-    titleLine1: string
-    titleLine2: string
+    badge: string
+    wordmark: string
+    title1: string
+    title2: string
     paragraph: string
     ctaEnter: string
     ctaWhy: string
-    stat0: string; stat1: string; stat2: string
-    badge: string
+    stats: [string, string][]
   }
   worlds: { kicker: string; title: string; subtitle: string; items: WorldCopy[] }
   byte: { kicker: string; title: string; subtitle: string }
@@ -36,235 +45,252 @@ export interface SiteCopy {
   banner: { title: string; text: string }
   faq: { kicker: string; title: string; items: FaqCopy[] }
   join: {
-    kicker: string; titleLine1: string; titleHighlight: string; paragraph: string
-    tableKicker: string; tableTitle: string; linkLabel: string
+    kicker: string; title1: string; title2: string; paragraph: string
+    buttonKicker: string; buttonTitle: string; linkLabel: string
     facts: string[]
   }
-  footer: { deptName: string; tagline: string; findTable: string; copyright: string }
+  footer: {
+    dept: string; sub: string; motto: string
+    addressLabel: string; phoneLabel: string; websiteLabel: string
+    rights: string
+  }
 }
 
 export const COPY: Record<Lang, SiteCopy> = {
+  /* ─────────────────────────── ENGLISH ─────────────────────────── */
   en: {
-    nav: { worlds: 'Worlds', byte: 'Byte', why: 'Why CS', faq: 'FAQ', join: 'Find Us', cta: 'Find Our Table', poster: '🖨 Poster' },
+    brand: { name: 'Computer Science', sub: 'Nawroz University' },
+    nav: { worlds: 'Worlds', byte: 'Byte', why: 'Why CS', faq: 'FAQ', menu: 'Menu' },
     hero: {
-      kicker: '// COMPUTER SCIENCE',
-      badge: 'WELCOME TO THE DIGITAL WORLD',
-      titleLine1: 'We have a world of our own.',
-      titleLine2: 'Come build yours inside it.',
-      paragraph: 'Ours is the digital world — and here you don’t just enter it, you carve out your own place within it. You’ll create what doesn’t exist yet: artificial intelligence, games, robots, and the software that runs the world.',
-      ctaEnter: 'Enter our world',
-      ctaWhy: 'Why choose CS',
-      stat0: 'worlds to master', stat1: 'year Bachelor’s degree', stat2: 'places you can work from',
+      badge: 'Welcome to Your Digital Future.',
+      wordmark: 'Computer Science',
+      title1: 'Build your own world',
+      title2: 'in the digital universe.',
+      paragraph: 'You use apps, play games, and surf the web every day. But what if you could create them yourself? Here, you don’t just use technology — you build it. From smart AI to amazing games and robots, your journey starts now.',
+      ctaEnter: 'Step into the world',
+      ctaWhy: 'Why Computer Science?',
+      stats: [['7', 'Amazing worlds to explore'], ['4', 'Years to master them'], ['∞', 'Endless career opportunities']],
     },
     worlds: {
-      kicker: '// WHAT YOU’LL LEARN',
-      title: 'Seven worlds. You’ll explore them all.',
-      subtitle: 'These aren’t separate tracks to choose between — every Computer Science student learns them all. One degree, seven ways to build.',
+      kicker: '// What you will learn',
+      title: 'Seven worlds. You get to explore them all.',
+      subtitle: 'You don’t have to choose just one path. Every Computer Science student learns the secrets behind all of them.',
       items: [
-        { line: 'Think. Predict. Automate.', long: 'Train neural networks and build systems that see, understand, and decide. The frontier everyone is racing toward — and you get there first.' },
-        { line: 'Build worlds people play in.', long: 'Design characters, physics, and universes. Turn imagination into interactive worlds that millions can step inside.' },
-        { line: 'Machines that move and sense.', long: 'Give hardware a brain. Program machines that perceive their surroundings and act on their own.' },
-        { line: 'Power the internet.', long: 'Build the platforms the world lives on. From idea to a site used across the planet in an afternoon.' },
-        { line: 'A billion pockets, your idea.', long: 'Ship apps that live in people’s hands every day. Your creation, everywhere they go.' },
-        { line: 'Tools the world relies on.', long: 'Engineer the powerful software professionals depend on to get real work done.' },
-        { line: 'Defend what matters.', long: 'Protect networks, systems, and data from real threats. Learn to think like an attacker so you can build like a defender.' },
+        { text: 'Teach computers to think and learn. Be part of the future of tech.' },
+        { text: 'Don’t just play games — build them. Create characters and worlds for millions to enjoy.' },
+        { text: 'Bring machines to life. Program robots that move, act, and help people.' },
+        { text: 'Build the internet. Create websites that anyone, anywhere can use.' },
+        { text: 'Have a great app idea? Learn how to build it and put it in everyone’s pocket.' },
+        { text: 'Create powerful computer programs that businesses rely on every day to get real work done.' },
+        { text: 'Become a digital defender. Learn how hackers think so you can protect important data.' },
       ],
     },
     byte: {
-      kicker: '// MEET THE DEPARTMENT',
-      title: 'This is Byte. 🐭',
-      subtitle: 'Our little mascot runs on network cables and pure curiosity — just like us. Go on, bother her a little.',
+      kicker: '// Meet the Mascot',
+      title: 'This is Byte! 🐭',
+      subtitle: 'Our little campus mouse who loves tech just as much as we do. Go ahead, play with him!',
     },
     why: {
-      kicker: '// WHY COMPUTER SCIENCE',
-      title: 'Four reasons to build instead of memorize.',
+      kicker: '// Why Computer Science',
+      title: 'Four reasons to choose Computer Science',
       reasons: [
-        { t: 'You create, not memorize', d: 'Many fields ask you to memorize what already exists. Computer Science hands you the tools to build what doesn’t exist yet — and lets you decide what the future looks like.' },
-        { t: 'Your classroom has no borders', d: 'A laptop is your lab. Study, build, and work from Duhok, from home, or from anywhere on Earth. Your world isn’t confined to one building.' },
-        { t: 'One field powers every other', d: 'Nearly every industry today runs on code. Choose Computer Science and you don’t tie your future to one field — you become essential to all of them.' },
-        { t: 'You start building on day one', d: 'No waiting years to touch real work. From your first semester you’re making apps, games, and intelligent systems that actually run.' },
+        { t: 'You create things', d: 'Here you build new things: apps, games, and programs. The future is made by people like you.' },
+        { t: 'Work from anywhere', d: 'All you need is a laptop. You can study and work from home, or from anywhere in the world.' },
+        { t: 'Every field needs you', d: 'Almost every company today runs on computers and software. Computer Science opens the door to all of them.' },
+        { t: 'Build from day one', d: 'From your very first semester, you write your own programs and see them come to life.' },
       ],
     },
     banner: {
-      title: 'Your classroom has no walls. Your career has no map.',
-      text: 'Build from Duhok, from home, or from the other side of the world. In our world, where you are never decides what you can create.',
+      title: 'Your university has no walls. Your career has no borders.',
+      text: 'Build from Duhok, from your home, or from the other side of the world. In our world, where you are doesn’t dictate what you can create.',
     },
     faq: {
-      kicker: '// BEFORE YOU DECIDE',
-      title: 'Questions, answered.',
+      kicker: '// Before You Decide',
+      title: 'Questions & Answers',
       items: [
-        { q: 'Do I need coding experience to start?', a: 'None at all. We start from zero. What we look for is curiosity and the willingness to build — the rest, we teach you, step by step.' },
-        { q: 'What language are courses taught in?', a: 'Courses are taught in Kurdish and English. Programming is naturally an English-literate craft, and we build that skill with you as you go — a lasting advantage in itself.' },
-        { q: 'How is this different from other majors?', a: 'Computer Science is about creating and inventing rather than memorizing information. It’s a four-year Bachelor’s degree, and your work is not tied to a single place or profession.' },
-        { q: 'Who teaches the courses?', a: 'Experienced professionals who have built real software and systems — people who bring the practice of the field, not only its theory, into the room.' },
-        { q: 'What can I actually build here?', a: 'AI models, video games, robots, websites, mobile apps, network security systems, and desktop software. Seven worlds, one department — you choose which to master.' },
+        { q: 'Do I need programming experience to start?', a: 'Not at all! Our program is designed for everyone, including complete beginners. We start from the fundamentals and guide you step by step to build your skills.' },
+        { q: 'What languages are classes taught in?', a: 'Classes are taught in Kurdish and English. Programming is naturally an English-dependent field, and we will help you build your English proficiency alongside your coding skills — a major advantage for your future career.' },
+        { q: 'How is this different from other fields?', a: 'Computer Science empowers you to create solutions from scratch. It is a unique blend of logic, creativity, and problem-solving, offering you the freedom to work globally and shape the digital future.' },
+        { q: 'Who teaches the classes?', a: 'You will be guided by dedicated academics and experienced tech professionals who are passionate about mentoring the next generation of innovators and developers.' },
+        { q: 'What can I really build here?', a: 'The possibilities are endless. You will learn to build mobile apps, complex websites, software systems, and even explore artificial intelligence to solve real-world problems.' },
       ],
     },
     join: {
-      kicker: '// COME SAY HELLO',
-      titleLine1: 'Let’s build your future,',
-      titleHighlight: 'together.',
-      paragraph: 'Behind this table is a family that codes, creates, and dreams as one. Bring your curiosity — we’ll bring the tools, the mentors, and a place where you truly belong. Your world in Computer Science begins the moment you say hello.',
-      tableKicker: 'OPENS NAWROZ.EDU.KRD IN A NEW TAB ↗',
-      tableTitle: 'Visit the official Computer Science department website',
+      kicker: '// Come in, say hello',
+      title1: 'We are building your future together,',
+      title2: 'Continuously.',
+      paragraph: 'Behind this desk is a family that codes, creates, and dreams together. Bring your curiosity — we will provide the tools, the mentors, and a community where you truly belong. Your Computer Science journey begins the moment you say hello.',
+      buttonKicker: 'Open nawroz.edu.krd in a new tab ↗',
+      buttonTitle: 'Visit the official Computer Science Department website',
       linkLabel: 'Or open the department page directly ↗',
-      facts: ['College of Science', '4-Year Bachelor’s Degree', 'Build from anywhere', 'No experience needed'],
+      facts: ['College of Science', '4-Year Bachelor’s Degree', 'Build from anywhere', 'No prior experience required'],
     },
     footer: {
-      deptName: 'Dept. of Computer Science',
-      tagline: 'NAWROZ UNIVERSITY · COLLEGE OF SCIENCE · DUHOK',
-      findTable: 'Find Our Table →',
-      copyright: '© 2026 Nawroz University · We have a world of our own — come build yours inside it.',
+      dept: 'Computer Science Department',
+      sub: 'Nawroz University · College of Science',
+      motto: 'Stop just playing the game. Start building it.',
+      addressLabel: 'Address',
+      phoneLabel: 'Phone',
+      websiteLabel: 'University website',
+      rights: '© 2026 Department of Computer Science, Nawroz University. All rights reserved.',
     },
   },
 
+  /* ─────────────────────────── KURDISH (Badini) ─────────────────────────── */
   ku: {
-    nav: { worlds: 'جیهان', byte: 'بایت', why: 'بۆچی زانستا کۆمپیوتەرێ', faq: 'پرسیارێن گشتی', join: 'پەیوەندی', cta: 'مێزا مە بدۆزەرەوە', poster: '🖨 پۆستەر' },
+    brand: { name: 'زانستا کۆمپیوتەرێ', sub: 'زانکۆیا نەورۆز' },
+    nav: { worlds: 'جیهان', byte: 'بایت', why: 'بۆچی زانستا کۆمپیوتەرێ', faq: 'پرسیار و بەرسڤ', menu: 'لیست' },
     hero: {
-      kicker: '// زانستا کۆمپیوتەرێ',
-      badge: 'بەخێرهاتن بۆ جیهانا دیجیتالی',
-      titleLine1: 'ئەم جیهانەکا خۆیا هەینە.',
-      titleLine2: 'وەرە، یا خۆ لناڤ ئاڤا بکە.',
-      paragraph: 'ئەڈە جیهانا دیجیتالییا مەیە — لێرێ تو تنێ ناچیتە ناڤێ، بەلکو شوینەکێ بۆ خۆ دروست دکەی. تو دێ ئەوێ چێبکەی کو هێشتا نینن: ژیریا دەستکرد، یاری، رۆبۆت، و نەرمامارا کو جیهانێ دبەزینێ.',
-      ctaEnter: 'بچۆرە ناڤ جیهانێ',
-      ctaWhy: 'بۆچی زانستا کۆمپیوتەرێ',
-      stat0: 'جیهان بۆ فێربوونێ', stat1: 'ساڵێن بەکالۆریۆس', stat2: 'شوین بۆ خەبات',
+      badge: 'ب خێرهاتی بۆ داهاتوویێ تە یێ دیجیتاڵی.',
+      wordmark: 'زانستا کۆمپیوتەرێ',
+      title1: 'جیهانا خۆ ئاڤا بکە',
+      title2: 'د گەردوونا دیجیتاڵی دا.',
+      paragraph: 'تو هەر ڕۆژ ئەپلیکەیشنان بکار دئینی، یاریان دکەی و دچیتە د ناڤ ئینتەرنێتێ دا. لێ چ دبی ئەگەر تو ب خۆ وان دروست بکەی؟ ل ڤێرە، تو ب تنێ تەکنۆلۆژیایێ بکار نائینی — بەلکو تو وێ ئاڤا دکەی. ژ ژیرییا دەستکرد تا یاری و ڕۆبۆتێن سەرنجڕاکێش، گەشتا تە ل ڤێرە دەست پێ دکەت.',
+      ctaEnter: 'بچە ناڤ جیهانێ',
+      ctaWhy: 'بۆچی زانستا کۆمپیوتەرێ؟',
+      stats: [['٧', 'جیهانێن مەزن بۆ دیتنێ'], ['٤', 'ساڵ بۆ فێربوونێ'], ['∞', 'دەرفەتێن کاری یێن بێ سنور']],
     },
     worlds: {
-      kicker: '// ئەوێ تو دێ فێر ببی',
-      title: 'حەفت جیهان. تو دێ هەمیان بگەڕی.',
-      subtitle: 'ئەڈ نە ڕێکێن جودان یێن هەلبژارتنێ نن — هەر قوتابییەکێ زانستا کۆمپیوتەرێ هەمیان فێر دبیت. یەک بروانامە، حەفت ڕێکێن ئاڤاکرنێ.',
+      kicker: '// ئەو تشتێ تو دێ فێر بی',
+      title: 'حەفت جیهان. تو دێ د هەمیان دا گەڕیی.',
+      subtitle: 'پێدڤی ناکەت بتنێ ئێک ڕێک هەلبژێری. هەر قوتابییەکێ زانستا کۆمپیوتەرێ دێ فێری نهێنیێن هەمیان بیت.',
       items: [
-        { line: 'بیر بکە. پێشبینی بکە. ئۆتۆماتیک بکە.', long: 'تۆڕێن نۆرۆنی ئاڤا بکە و سیستەمان دروست بکە یێن دبینن، تێدگەهن و بریار ددەن. سنووری کو هەمی بەرەڤ دچن — و تو یێ پێشین دگەهیژیتێ.' },
-        { line: 'جیهانان ئاڤا بکە یێن مرۆڤ تێدا یاری دکەن.', long: 'کارەکتەران، فیزیک، و جیهانان دیزاین بکە. خەیاڵێ بگهورە جیهانەکا ئینتراکتیڤ کو ملیۆنان دشێن بچنە ناڤێ.' },
-        { line: 'ئامیرێن کو دخوزن و هەست دکەن.', long: 'مێژییەکێ بدە ئامیران. ئامیران پرۆگرام بکە کو دەڤدورا خۆ هەست پێ بکەن و بخۆڤە کار بکەن.' },
-        { line: 'هێزا ئینتەرنێتێ بدە.', long: 'پلاتفۆرمان کو جیهان لسەر دژی ئاڤا بکە. ژ بیرۆکەکێ بۆ مالپەڕەکێ کو دگەل جیهانی تێدا کار دهێتە کرن، ب یەک نێڤرۆ.' },
-        { line: 'ملیارەک جێب، بیرۆکا تە.', long: 'ئەپلیکەسیۆنان دەربخە یێن یەر هەر روژ دناڤ دەستێن مرۆڤان دژین. دروستکرنا تە، هەر شوینێ ئەو دچن.' },
-        { line: 'ئامرازێن جیهان پشتی پێ دبەستیت.', long: 'نەرمامارا بهێز ئاڤا بکە یا کارمەندێن پیشەیی پشتی پێ دبەستن بۆ کارەکێ راستەقینە.' },
-        { line: 'بپاریزە ئەوێ گرنگە.', long: 'تۆڕ، سیستەم، و داتایان ژ هەڕەشێن راستەقینە بپارێزە. فێر ببە کو وەک هێرشکەرەکی بیر بکەی، بۆ ئەوێ کو وەک پاریزەرەکی ئاڤا بکەی.' },
+        { local: 'ژیرییا دەستکرد', text: 'کۆمپیوتەری فێر بکە کا چاوا هزر بکەت و فێر ببیت. ببە پارچەیەک ژ داهاتوویێ تەکنۆلۆژیایێ.' },
+        { local: 'دیزاینکرنا یاریان', text: 'ب تنێ یاریێ نەکە — بەلکو یاریان دروست بکە. کارەکتەر و جیهانان ئاڤا بکە کو ملیۆنان کەس حەز ژێ بکەن.' },
+        { local: 'ڕۆبۆتیک', text: 'گیانی بکە ب بەر ئامیران دا. ڕۆبۆتان پرۆگرام بکە بۆ وێ چەندێ بکارن ب لڤن و هاریکاریا مرۆڤان بکەن.' },
+        { local: 'گەشەپێدانا وێبسایتان', text: 'ئینتەرنێتێ ئاڤا بکە. ماڵپەڕان دروست بکە کو هەر کەسەک ل هەر جهەکێ بشێت بکاربینیت.' },
+        { local: 'ئەپلیکەیشنێن مۆبایلێ', text: 'بیرۆکەیەکا باش بۆ ئەپەکێ تە هەیە؟ فێر ببە کا چاوا دروست بکەی و بگەهینیە دەستێ هەمی کەسان.' },
+        { local: 'سۆفتوێرێن کۆمپیوتەری', text: 'پرۆگرامێن ب هێز یێن کۆمپیوتەری دروست بکە کو کۆمپانی هەر ڕۆژ بۆ کارێن خۆ پشت پێ دبەستن.' },
+        { local: 'ئاساییشا داتا و تۆڕان', text: 'ببە پارێزەرێ دیجیتاڵی. فێر ببە کا هاککەر چاوا هزر دکەن بۆ وێ چەندێ داتایێن گرنگ بپارێزی.' },
       ],
     },
     byte: {
-      kicker: '// ناسینا بەشێ',
-      title: 'ئەڤێ بایتە. 🐭',
-      subtitle: 'مۆسکەکا مە یا بچووک ب کابلێن تۆڕێ و ب کنجوسیا خاڵس دخەبتێت — وەکی مە. وەرێ، کەمێک هەراسانی بکە.',
+      kicker: '// ناساندنا بەشی',
+      title: 'ئەڤە بایتە (Byte)! 🐭',
+      subtitle: 'مشکێ مە یێ بچووک یێ کۆلیژێ کو ڕێک وەکی مە حەز ژ تەکنۆلۆژیایێ دکەت. وەرە، کێمەکێ یاریێ پێ بکە!',
     },
     why: {
       kicker: '// بۆچی زانستا کۆمپیوتەرێ',
-      title: 'چار هۆکار بۆ ئاڤاکرنێ، دەورەن ژبیرکرنێ.',
+      title: 'چار هۆکار بۆ هەلبژارتنا زانستا کۆمپیوتەرێ',
       reasons: [
-        { t: 'تو ئاڤا دکەی، نە ژبیر دکەی', d: 'پترین بواران داخوازی دکەن کو تو ئەوێ هەیە ژبیر بکەی. زانستا کۆمپیوتەرێ ئامرازان ددەتە تە بۆ ئاڤاکرنا ئەوێ هێشتا نینە — و دهێلیتە تو بریار بدەی داهاتوو ب چ رەنگی یێ.' },
-        { t: 'قوتابخانا تە سنوور نینن', d: 'کۆمپیوتەرەکا تە یا لاپتۆپ لابۆراتووارا تەیە. لدهۆکێ، ماڵا خۆ، یان هەر شوینێ سەر ئەرد فێربە و خەبات بکە. جیهانا تە ب یەک بینایی سنووردار نینە.' },
-        { t: 'یەک بوار هێزا هەمیان دیت', d: 'نزیکی هەمی پیشەیێن ئەڤرۆیی ب کۆدی دخەبتن. زانستا کۆمپیوتەرێ هەلبژێرە و داهاتویا خۆ ب یەک بواری ڤە گرێ نەدە — تو بۆ هەمی بوارا پێدڤی دبی.' },
-        { t: 'ژ روژا یەکێ ڤە دەست ب ئاڤاکرنێ دکەی', d: 'پێدڤی ب چاڤەرێکرنا ساڵان نینە بۆ دەستنیشانکرنا کارەکێ راستەقینە. ژ سیمێستەرا یەکێ ڤە تو ئەپلیکەسیۆن، یاری، و سیستەمێن زیرەک ئاڤا دکەی کو ڕاستەقینە کار دکەن.' },
+        { t: 'تو تشتان دروست دکەی', d: 'ل ڤێرە تو تشتێن نوی ئاڤا دکەی: ئەپلیکەیشن، یاری و پرۆگرام. داهاتوو ب دەستێن کەسێن وەکی تە دهێتە دروستکرن.' },
+        { t: 'ژ هەر جهەکێ کار بکە', d: 'ب تنێ لاپتۆپەک پێدڤییە. تو دشێی ژ ماڵا خۆ یان ژ هەر جهەکێ جیهانێ بخوینی و کار بکەی.' },
+        { t: 'هەمی بوار پێدڤی ب تە نە', d: 'نێزیکی هەمی کۆمپانی ئەڤرۆ ب کۆمپیوتەر و سۆفتوێران کار دکەن. زانستا کۆمپیوتەرێ دەرگەهێ هەمیان ل بەر تە ڤەدکەت.' },
+        { t: 'ژ ڕۆژا ئێکێ دەست پێ دکەی', d: 'هەر ژ سیمەستەرا ئێکێ، تو دێ پرۆگرامێن خۆ نڤیسی و ببینی کا چاوا کار دکەن.' },
       ],
     },
     banner: {
-      title: 'قوتابخانا تە دیوار نینن. پیشەیا تە نەخشە نینن.',
-      text: 'ژ دهۆکێ، ماڵا خۆ، یان ژ کەنارێ دی یێ جیهانێ ئاڤا بکە. ل جیهانا مە، شوینێ تو لێی یی، بریار نادەت ئەوێ تو دشێی چێ بکەی.',
+      title: 'زانکۆیا تە ب دیواران نەهاتیە سنوردارکرن. پیشەیێ تە چو سنور نینن.',
+      text: 'ژ دهۆکێ، ژ ماڵا خۆ، یان ژ هەر جهەکێ دی یێ جیهانێ دەست پێ بکە. ل جیهانا مە، ئەو جهێ تو لێ دژی، نابیتە ڕێگر ل هەمبەر وێ چەندێ کا تو دشێی چ دروست بکەی.',
     },
     faq: {
-      kicker: '// بەری بریارا خۆ بدەی',
-      title: 'پرسیار، ب بەرسڤ.',
+      kicker: '// بەری بڕیارێ بدەی',
+      title: 'پرسیار و بەرسڤ',
       items: [
-        { q: 'ئایا پێدڤیم ب ئەزموونا پرۆگرامکرنێ هەیە بۆ دەستپێکرنێ؟', a: 'نەخێر، هیچ. ئەم ژ سفرێ دەست پێ دکەین. ئەوێ ئەم لێ دگەرین کنجوسی و خوازیارییە بۆ ئاڤاکرنێ — یا مایی، ئەم گاڤ ب گاڤ فێری تە دکەین.' },
-        { q: 'وانە ب چ زمانی تێن وتنێ؟', a: 'وانە ب کوردی و ئینگلیزی تێن وتنێ. پرۆگرامکرن ب سروشتی پیشەیەکە کو خواندنا ئینگلیزی پێدڤییە، و ئەم ڤێ لێهاتنێ پێکڤە دگەل تە ئاڤا دکەین — بریاردانەکا مایندە ب خۆ خۆیە.' },
-        { q: 'ئەڤ ژ بوارێن دی چاوا جودایە؟', a: 'زانستا کۆمپیوتەرێ دەربارەی ئاڤاکرن و داهێنانێیە، نە ژبیرکرنا زانیاریان. بروانامەیەکا چار ساڵی یا بەکالۆریۆسە، و کارێ تە ب یەک شوین یان پیشەیێ ڤە گرێدایی نینە.' },
-        { q: 'کێ وانان دبێژیت؟', a: 'پسپۆرێن ئەزموونداری کو نەرمامار و سیستەمێن راستەقینە ئاڤا کرینە — کەسێن کو پراکتیزا بوارێ، نە تنێ تیۆرا وی، دئینن ژوورێ.' },
-        { q: 'ب راستی دشێم چ لێرێ ئاڤا بکەم؟', a: 'مۆدێلێن ژیریا دەستکرد، یاری، رۆبۆت، مالپەڕ، ئەپلیکەسیۆنێن مۆبایل، سیستەمێن پاراستنا تۆڕێ، و نەرمامارا سەرمیزێ. حەفت جیهان، یەک بەش — تو هەلبژێرە کیجارا فێر ببی.' },
+        { q: 'ئایا بۆ دەستپێکرنێ پێدڤی ب ئەزموونا پرۆگرامکرنێ هەیە؟', a: 'نەخێر ب چو ڕەنگان! پرۆگرامێ مە ب شێوەیەکێ هاتیە داڕشتن کو بۆ کەسێن دەستپێکەر ژی گونجای بیت. ئەم دێ ژ بنەمایان دەست پێ کەین و قۆناغ ب قۆناغ هاریکاریا تە کەین بۆ پێشخستنا شیانێن تە.' },
+        { q: 'وانە ب چ زمانەکی دهێنە گوتن؟', a: 'وانە ب زمانێن کوردی و ئینگلیزی دهێنە گوتن. پرۆگرامکرن ب سروشتێ خۆ پیشەیەکە کو پێدڤی ب زمانێ ئینگلیزییە، و ئەم دێ پێکڤە هاریکاریا تە کەین بۆ ئاڤاکرنا ڤێ شیانێ ل دەڤ تە — کو ئەڤە ژی ب خۆ دەستکەفتەکا مەزنە بۆ کارێ تە یێ پاشەڕۆژێ.' },
+        { q: 'ئەڤ بەشە چاوا ژ بوارێن دی جوداترە؟', a: 'زانستا کۆمپیوتەری شیانێ ددەتە تە کو چارەسەریان ژ سفرێ دروست بکەی. ئەڤ بوارە تێکەلەیەکە ژ لۆژیک و داهێنانێ، و دەرفەتێ ددەتە تە کو ل سەر ئاستێ جیهانێ کار بکەی و داهاتوویێ دیجیتاڵی ئاڤا بکەی.' },
+        { q: 'کێ وانەیان دبێژیت؟', a: 'دێ ژ لایێ مامۆستایێن ئەکادیمی و شارەزایێن بوارێ تەکنۆلۆژیایێ ڤە هێیە ڕێنماییکرن، کو ب حەزەکا مەزنڤە کار دکەن بۆ پێگەهاندنا نەوەیێ نوی یێ داهێنەر و گەشەپێدەران.' },
+        { q: 'ل ڤێرە ب ڕاستی دشێم چ دروست بکەم؟', a: 'بێ سنورە. تو دێ فێر بی کا چاوا ئەپلیکەیشنێن مۆبایلێ، وێبسایتێن پێشکەفتی، سیستەمێن سۆفتوێرێ، و تەنانەت ژیرییا دەستکرد دروست بکەی بۆ چارەسەرکرنا کێشەیێن جیهانا ڕاستەقینە.' },
       ],
     },
     join: {
-      kicker: '// وەرە، سلاڤ لێ بکە',
-      titleLine1: 'ئەم داهاتویا تە پێکڤە ئاڤا دکەین،',
-      titleHighlight: 'بەردەوام.',
-      paragraph: 'پشتی دڤێ مێزێ خێزانەکە یا کۆد دنڤیسیت، دروست دکەت، و وەکی یەک خەون دبینیت. کنجوسیا خۆ بینە — ئەم ئامراز، مامۆستا، و شوینەکێ کو تو یێ لێی ب راستی دبی بەشەک، دئینین. جیهانا تە یا زانستا کۆمپیوتەرێ دەستپێ دکەت هەر گاڤا تو سلاڤێـ دکەی.',
-      tableKicker: 'ماڵپەڕا nawroz.edu.krd د تابەکێ نوی دا ڤەدکەت ↗',
-      tableTitle: 'سەردانا ماڵپەڕا فەرمی یا بەشێ زانستا کۆمپیوتەرێ بکە',
-      linkLabel: 'یان پەڕەیا بەشی ڕاستەوخۆ ڤەکە ↗',
-      facts: ['کۆلێژا زانستێ', 'بروانامەیا بەکالۆریۆس ٤ ساڵان', 'ژ هەر شوینێ ئاڤا بکە', 'پێدڤی ب ئەزموونێ نینە'],
+      kicker: '// وەرە، سلاڤەکێ بکە',
+      title1: 'ئەم دێ پاشەڕۆژا تە پێکڤە ئاڤا کەین،',
+      title2: 'بەردەوام...',
+      paragraph: 'ل پشت ڤێ مێزێ، خێزانەکا مەزن هەیە کو کۆدان دنڤیسیت، داهێنانان دکەت و پێکڤە خەونان دبینیت. مەرەق و حەزێن خۆ دگەل خۆ بینە — ئەم ژی دێ ئامراز، مامۆستا و ژینگەهەکا گونجای بۆ تە دابین کەین کو ب ڕاستی هەست بکەی تو پارچەیەکی ژ ڤێ خێزانێ. جیهانا تە یا زانستا کۆمپیوتەرێ هەر ژ ئێکەم سلاڤا تە دەست پێ دکەت.',
+      buttonKicker: 'ماڵپەڕێ nawroz.edu.krd د پەنجەرەیەکا نوی دا ڤەدە ↗',
+      buttonTitle: 'سەردانا ماڵپەڕێ فەرمی یێ بەشێ زانستا کۆمپیوتەرێ بکە',
+      linkLabel: 'یان ڕاستەوخۆ پەڕەیێ بەشی ڤەدە ↗',
+      facts: ['کۆلیژا زانستێ', 'بڕوانامەیا بەکالۆریۆس بۆ ماوێ ٤ ساڵان', 'ژ هەر جهەکێ بی دەست پێ بکە', 'پێدڤی ب چو ئەزموونێن پێشوەخت نینە'],
     },
     footer: {
-      deptName: 'بەشێ زانستا کۆمپیوتەرێ',
-      tagline: 'NAWROZ UNIVERSITY · کۆلێژا زانستێ · دهۆک',
-      findTable: 'مێزا مە بدۆزەرەوە →',
-      copyright: '© ٢٠٢٦ Nawroz University · ئەم جیهانەکا خۆیا هەینە — وەرە یا خۆ ئاڤا بکە.',
+      dept: 'بەشێ زانستا کۆمپیوتەرێ',
+      sub: 'زانکۆیا نەورۆز (NAWROZ UNIVERSITY) · کۆلیژا زانستێ',
+      motto: 'ب تنێ یاریێ نەکە. دەست ب دروستکرنا وێ بکە.',
+      addressLabel: 'ناڤنیشان',
+      phoneLabel: 'تەلەفۆن',
+      websiteLabel: 'ماڵپەڕێ زانکۆیێ',
+      rights: '© ٢٠٢٦ بەشێ زانستا کۆمپیوتەرێ، زانکۆیا نەورۆز. هەمی ماف پاراستینە.',
     },
   },
 
+  /* ─────────────────────────── ARABIC ─────────────────────────── */
   ar: {
-    nav: { worlds: 'عوالم', byte: 'بايت', why: 'لماذا علوم الحاسوب', faq: 'الأسئلة الشائعة', join: 'تواصل معنا', cta: 'ابحث عن طاولتنا', poster: '🖨 ملصق' },
+    brand: { name: 'علوم الحاسوب', sub: 'جامعة نوروز' },
+    nav: { worlds: 'العوالم', byte: 'بايت', why: 'لماذا علوم الحاسوب', faq: 'أسئلة وأجوبة', menu: 'القائمة' },
     hero: {
-      kicker: '// علوم الحاسوب',
-      badge: 'مرحبًا بك في العالم الرقمي',
-      titleLine1: 'لدينا عالمنا الخاص.',
-      titleLine2: 'تعال وابنِ عالمك بداخله.',
-      paragraph: 'هذا عالمنا الرقمي — وهنا لا تكتفي بدخوله، بل تصنع مكانك الخاص فيه. ستبني ما لم يوجد بعد: الذكاء الاصطناعي، الألعاب، الروبوتات، والبرمجيات التي تُشغّل العالم.',
-      ctaEnter: 'ادخل عالمنا',
-      ctaWhy: 'لماذا تختار علوم الحاسوب',
-      stat0: 'عوالم لإتقانها', stat1: 'سنوات بكالوريوس', stat2: 'أماكن يمكنك العمل منها',
+      badge: 'مرحباً بك في مستقبلك الرقمي.',
+      wordmark: 'علوم الحاسوب',
+      title1: 'ابنِ عالمك الخاص',
+      title2: 'في الكون الرقمي.',
+      paragraph: 'أنت تستخدم التطبيقات وتلعب الألعاب وتتصفح الإنترنت كل يوم. ولكن ماذا لو تمكنت من صناعتها بنفسك؟ هنا، أنت لا تستهلك التكنولوجيا فقط — بل تبنيها. من الذكاء الاصطناعي إلى الألعاب والروبوتات المذهلة، رحلتك تبدأ الآن.',
+      ctaEnter: 'ادخل إلى العالم',
+      ctaWhy: 'لماذا علوم الحاسوب؟',
+      stats: [['7', 'عوالم رائعة لتستكشفها'], ['4', 'سنوات لتتعلمها'], ['∞', 'فرص عمل لا حصر لها']],
     },
     worlds: {
-      kicker: '// ماذا ستتعلم',
-      title: 'سبعة عوالم. ستكتشفها جميعًا.',
-      subtitle: 'هذه ليست مسارات منفصلة تختار بينها — كل طالب في علوم الحاسوب يدرسها جميعًا. شهادة واحدة، وسبع طرق للبناء.',
+      kicker: '// ما الذي ستتعلمه',
+      title: 'سبعة عوالم. ستستكشفها جميعاً.',
+      subtitle: 'لست مضطراً لاختيار مسار واحد فقط. كل طالب في علوم الحاسوب سيتعلم الأسرار وراءها جميعاً.',
       items: [
-        { line: 'فكّر. توقّع. شغّل تلقائيًا.', long: 'درّب شبكات عصبية وابنِ أنظمة ترى وتفهم وتقرر. الحدود التي يتسابق إليها الجميع — وستكون أول من يصل.' },
-        { line: 'ابنِ عوالم يلعب الناس بداخلها.', long: 'صمّم الشخصيات والفيزياء والعوالم. حوّل خيالك إلى عوالم تفاعلية يمكن لملايين الأشخاص الدخول إليها.' },
-        { line: 'آلات تتحرك وتستشعر.', long: 'امنح الأجهزة عقلًا. برمج آلات تدرك محيطها وتتصرف من تلقاء نفسها.' },
-        { line: 'شغّل الإنترنت.', long: 'ابنِ المنصات التي يعيش عليها العالم. من فكرة إلى موقع يستخدمه الناس حول العالم خلال يوم واحد.' },
-        { line: 'مليار جيب، وفكرتك بداخله.', long: 'أطلق تطبيقات يستخدمها الناس يوميًا. إبداعك، أينما ذهبوا.' },
-        { line: 'أدوات يعتمد عليها العالم.', long: 'صمّم البرمجيات القوية التي يعتمد عليها المحترفون لإنجاز عملهم الفعلي.' },
-        { line: 'احمِ ما يهم.', long: 'احمِ الشبكات والأنظمة والبيانات من تهديدات حقيقية. تعلّم أن تفكر كمهاجم لتبني كمدافع.' },
+        { local: 'الذكاء الاصطناعي', text: 'علّم أجهزة الكمبيوتر كيف تفكر وتتعلم. كن جزءاً من مستقبل التكنولوجيا.' },
+        { local: 'تصميم الألعاب', text: 'لا تكتفِ بلعب الألعاب — بل اصنعها. صمم شخصيات وعوالم يستمتع بها الملايين.' },
+        { local: 'الروبوتات', text: 'ابعث الحياة في الآلات. برمج روبوتات تتحرك وتساعد الناس في حياتهم.' },
+        { local: 'تطوير الويب', text: 'ابنِ الإنترنت. صمم مواقع إلكترونية يمكن لأي شخص في العالم استخدامها بسهولة.' },
+        { local: 'تطبيقات الهواتف', text: 'هل لديك فكرة رائعة لتطبيق؟ تعلم كيف تبنيه وتجعله في متناول الجميع.' },
+        { local: 'برمجيات الكمبيوتر', text: 'اصنع برامج قوية تعتمد عليها الشركات والمؤسسات يومياً لإنجاز أعمالها.' },
+        { local: 'أمن الشبكات والبيانات', text: 'كن حارساً رقمياً. تعلم كيف يفكر المخترقون (الهاكرز) لتتمكن من حماية البيانات المهمة.' },
       ],
     },
     byte: {
-      kicker: '// تعرّف على القسم',
-      title: 'هذه بايت. 🐭',
-      subtitle: 'تعمل رفيقتنا الصغيرة بكابلات الشبكة وفضول خالص — تمامًا مثلنا. هيا، أزعجيها قليلًا.',
+      kicker: '// تعرف على القسم',
+      title: 'هذا بايت (Byte)! 🐭',
+      subtitle: 'فأر جامعتنا الصغير الذي يعشق التكنولوجيا مثلنا تماماً. تفضل، العب معه قليلاً!',
     },
     why: {
       kicker: '// لماذا علوم الحاسوب',
-      title: 'أربعة أسباب لتبني بدلًا من أن تحفظ.',
+      title: 'أربعة أسباب لاختيار علوم الحاسوب',
       reasons: [
-        { t: 'أنت تبني، لا تحفظ', d: 'تطلب منك مجالات كثيرة حفظ ما هو موجود بالفعل. تمنحك علوم الحاسوب أدوات بناء ما لا يزال غير موجود — وتترك لك القرار في شكل المستقبل.' },
-        { t: 'صفك بلا حدود', d: 'حاسوبك المحمول هو مختبرك. ادرس وابنِ واعمل من دهوك، من المنزل، أو من أي مكان على الأرض. عالمك ليس محصورًا داخل مبنى واحد.' },
-        { t: 'مجال واحد يُشغّل كل المجالات الأخرى', d: 'كل الصناعات تقريبًا تعمل بالكود اليوم. اختر علوم الحاسوب ولن تربط مستقبلك بمجال واحد — بل تصبح ضروريًا لها جميعًا.' },
-        { t: 'تبدأ البناء من اليوم الأول', d: 'لا داعي للانتظار سنوات لتلمس عملاً حقيقيًا. منذ فصلك الدراسي الأول تصنع تطبيقات وألعابًا وأنظمة ذكية تعمل فعليًا.' },
+        { t: 'أنت تصنع الأشياء', d: 'هنا تبني أشياء جديدة: تطبيقات وألعاباً وبرامج. المستقبل يصنعه أشخاص مثلك.' },
+        { t: 'اعمل من أي مكان', d: 'كل ما تحتاجه هو حاسوب محمول. يمكنك الدراسة والعمل من منزلك، أو من أي مكان في العالم.' },
+        { t: 'كل المجالات تحتاجك', d: 'تعمل معظم الشركات اليوم بالحواسيب والبرمجيات. علوم الحاسوب تفتح لك الباب إليها جميعاً.' },
+        { t: 'ابدأ البناء من اليوم الأول', d: 'منذ فصلك الدراسي الأول، ستكتب برامجك بنفسك وتراها تعمل أمامك.' },
       ],
     },
     banner: {
-      title: 'صفّك بلا جدران. مسارك المهني بلا خريطة.',
-      text: 'ابنِ من دهوك، من المنزل، أو من الطرف الآخر من العالم. في عالمنا، مكانك لا يقرر أبدًا ما يمكنك صنعه.',
+      title: 'جامعتك لا تحدها جدران. ومسيرتك المهنية بلا حدود.',
+      text: 'ابدأ من دهوك، من منزلك، أو من أي مكان آخر في العالم. في عالمنا، المكان الذي تتواجد فيه لا يحدد ما يمكنك بناؤه.',
     },
     faq: {
       kicker: '// قبل أن تقرر',
-      title: 'أسئلة، وأجوبتها.',
+      title: 'أسئلة وأجوبة',
       items: [
-        { q: 'هل أحتاج إلى خبرة برمجية لأبدأ؟', a: 'لا، إطلاقًا. نبدأ من الصفر. ما نبحث عنه هو الفضول والرغبة في البناء — والباقي نعلّمك إياه خطوة بخطوة.' },
-        { q: 'بأي لغة تُدرّس المواد؟', a: 'تُدرّس المواد بالكردية والإنجليزية. البرمجة بطبيعتها مهنة تتطلّب إلمامًا بالإنجليزية، ونبني هذه المهارة معك خطوة بخطوة — وهي ميزة تبقى معك دائمًا.' },
-        { q: 'كيف يختلف هذا عن التخصصات الأخرى؟', a: 'علوم الحاسوب تتمحور حول الإبداع والابتكار لا الحفظ. إنها شهادة بكالوريوس مدتها أربع سنوات، وعملك غير مرتبط بمكان أو مهنة واحدة.' },
-        { q: 'من يقوم بتدريس المواد؟', a: 'محترفون ذوو خبرة بنوا برمجيات وأنظمة حقيقية — أشخاص يجلبون ممارسة المجال، لا نظريته فقط، إلى الصف.' },
-        { q: 'ما الذي يمكنني بناؤه هنا فعليًا؟', a: 'نماذج ذكاء اصطناعي، ألعاب فيديو، روبوتات، مواقع إلكترونية، تطبيقات جوال، أنظمة حماية شبكات، وبرمجيات مكتبية. سبعة عوالم، قسم واحد — تختار أيها تتقن.' },
+        { q: 'هل أحتاج إلى خبرة سابقة في البرمجة للبدء؟', a: 'لا على الإطلاق! تم تصميم برنامجنا ليناسب الجميع، بما في ذلك المبتدئين تماماً. نحن نبدأ معك من الأساسيات ونرشدك خطوة بخطوة لتطوير مهاراتك.' },
+        { q: 'بأي لغة تُدرس المحاضرات؟', a: 'تُدرس المحاضرات باللغتين الكردية والإنجليزية. بطبيعتها، البرمجة مجال يعتمد على اللغة الإنجليزية، وسنعمل معاً على مساعدتك في بناء مهارتك فيها إلى جانب مهاراتك البرمجية — وهذا في حد ذاته ميزة كبرى لمستقبلك المهني.' },
+        { q: 'كيف يختلف هذا التخصص عن المجالات الأخرى؟', a: 'علوم الحاسوب تمنحك القدرة على ابتكار الحلول من الصفر. إنه مزيج فريد بين المنطق، الإبداع، وحل المشكلات، مما يوفر لك حرية العمل على مستوى عالمي والمساهمة في صياغة المستقبل الرقمي.' },
+        { q: 'من هم الأساتذة الذين يدرسون في هذا القسم؟', a: 'سيقوم بتوجيهك نخبة من الأكاديميين والمحترفين ذوي الخبرة في مجال التكنولوجيا، الذين يكرسون جهودهم بشغف لإعداد الجيل القادم من المبدعين والمطورين.' },
+        { q: 'ما الذي يمكنني حقاً بناؤه هنا؟', a: 'الاحتمالات لا حصر لها. ستتعلم كيفية برمجة تطبيقات الهواتف، مواقع الويب المتقدمة، أنظمة البرمجيات، وحتى استكشاف الذكاء الاصطناعي لحل مشاكل واقعية.' },
       ],
     },
     join: {
-      kicker: '// تعال وقل مرحبًا',
-      titleLine1: 'لنبنِ مستقبلك،',
-      titleHighlight: 'معًا.',
-      paragraph: 'خلف هذه الطاولة عائلة تكتب الكود وتبدع وتحلم كواحد. أحضر فضولك — سنحضر الأدوات والموجّهين ومكانًا تنتمي إليه فعلًا. يبدأ عالمك في علوم الحاسوب لحظة أن تقول مرحبًا.',
-      tableKicker: 'يفتح nawroz.edu.krd في علامة تبويب جديدة ↗',
-      tableTitle: 'زيارة الموقع الرسمي لقسم علوم الحاسوب',
+      kicker: '// تفضل، وألقِ التحية',
+      title1: 'سنبني مستقبلك معاً،',
+      title2: 'بخطوات مستمرة.',
+      paragraph: 'خلف هذا المكتب، توجد عائلة تكتب الأكواد، تبتكر، وتحلم معاً. أحضر فضولك وشغفك معك — ونحن سنوفر لك الأدوات، والأساتذة، والمجتمع الذي ستشعر فيه حقاً بالانتماء. رحلتك في عالم علوم الحاسوب تبدأ من أول إلقاء تحية.',
+      buttonKicker: 'افتح موقع nawroz.edu.krd في نافذة جديدة ↗',
+      buttonTitle: 'تفضل بزيارة الموقع الرسمي لقسم علوم الحاسوب',
       linkLabel: 'أو افتح صفحة القسم مباشرة ↗',
-      facts: ['كلية العلوم', 'شهادة بكالوريوس 4 سنوات', 'ابنِ من أي مكان', 'لا حاجة لخبرة سابقة'],
+      facts: ['كلية العلوم', 'درجة البكالوريوس لمدة 4 سنوات', 'ابدأ البناء من أي مكان', 'لا يشترط وجود خبرة سابقة'],
     },
     footer: {
-      deptName: 'قسم علوم الحاسوب',
-      tagline: 'NAWROZ UNIVERSITY · كلية العلوم · دهوك',
-      findTable: 'ابحث عن طاولتنا →',
-      copyright: '© 2026 Nawroz University · لدينا عالمنا الخاص — تعال وابنِ عالمك بداخله.',
+      dept: 'قسم علوم الحاسوب',
+      sub: 'جامعة نوروز (NAWROZ UNIVERSITY) · كلية العلوم',
+      motto: 'لا تكتفِ باللعب. ابدأ في بناء اللعبة.',
+      addressLabel: 'العنوان',
+      phoneLabel: 'الهاتف',
+      websiteLabel: 'موقع الجامعة',
+      rights: '© 2026 قسم علوم الحاسوب، جامعة نوروز. جميع الحقوق محفوظة.',
     },
   },
 }
-
-export const DEPARTMENT_URL = 'https://nawroz.edu.krd/departments/department-of-computer-science'

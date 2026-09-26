@@ -68,3 +68,38 @@ export function WorldBadge({ size = 64 }: { size?: number }) {
     </svg>
   )
 }
+
+export function CodeIcon({ size = 20, color = '#38BDF8' }: P) {
+  return (
+    <svg {...base(size)} stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4.5l-3 15" />
+    </svg>
+  )
+}
+
+export function LayersIcon({ size = 20, color = '#38BDF8' }: P) {
+  return (
+    <svg {...base(size)} stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3l9 5-9 5-9-5 9-5z" />
+      <path d="M3 13l9 5 9-5" opacity=".7" />
+      <path d="M3 17.5l9 5 9-5" opacity=".4" />
+    </svg>
+  )
+}
+
+export function PinIcon({ size = 18, color = '#38BDF8' }: P) {
+  return (
+    <svg {...base(size)} stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
+      <circle cx="12" cy="9.5" r="2.5" />
+    </svg>
+  )
+}
+
+export function PhoneIcon({ size = 18, color = '#38BDF8' }: P) {
+  return (
+    <svg {...base(size)} stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
+    </svg>
+  )
+}

@@ -20,14 +20,14 @@ type IconProps = { on: boolean }
 /* ── 01 · Artificial Intelligence — dog/cat detection with a glowing brain halo ── */
 export function AIIcon({ on }: IconProps) {
   return (
-    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block' }}>
+    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block', direction: 'ltr', unicodeBidi: 'isolate' }}>
       <style>{`
         @keyframes box-pop { 0%{opacity:0; transform:scale(0.7)} 100%{opacity:1; transform:scale(1)} }
         @keyframes tag-fade { from{opacity:0; transform:translateY(3px)} to{opacity:1; transform:translateY(0)} }
         @keyframes scan-sweep { 0%{transform:translateY(0); opacity:.9} 85%{opacity:.7} 100%{transform:translateY(48px); opacity:0} }
       `}</style>
       {/* glowing brain halo, always faintly present, brightens on hover */}
-      <g transform="translate(32,32) scale(1.18) translate(-32,-32)">
+      <g transform="translate(32,32) scale(1.12) translate(-32,-32)" style={{ opacity: on ? 1 : 0, transition: 'opacity .45s' }}>
         <path d="M20,10 C14,10 10,14 10,19 C6,20 4,24 5,28 C2,30 2,35 5,38 C4,42 6,46 10,47 C10,52 14,56 20,56 C22,59 28,60 32,58 C36,60 42,59 44,56 C50,56 54,52 54,47 C58,46 60,42 59,38 C62,35 62,30 59,28 C60,24 58,20 54,19 C54,14 50,10 44,10 C41,8 35,8 32,11 C29,8 23,8 20,10 Z"
           fill="none" stroke={G} strokeWidth="1.4" opacity={on ? 0.85 : 0.38}
           style={{ filter: on ? `drop-shadow(0 0 5px ${G})` : 'none', transition: 'opacity 0.4s, filter 0.4s' }} />
@@ -95,7 +95,7 @@ export function AIIcon({ on }: IconProps) {
 /* ── 02 · Game Design — controller projecting a spinning 3D cube + pyramid ── */
 export function GameIcon({ on }: IconProps) {
   return (
-    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block' }}>
+    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block', direction: 'ltr', unicodeBidi: 'isolate' }}>
       <style>{`
         @keyframes led-pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
         @keyframes pad-btn { 0%,100%{transform:scale(1)} 50%{transform:scale(1.5)} }
@@ -111,10 +111,13 @@ export function GameIcon({ on }: IconProps) {
         <path d="M25,15 L25,25 L32,29 L32,19 Z" fill={B} opacity="0.4" stroke={G} strokeWidth="1" />
         <path d="M39,15 L39,25 L32,29 L32,19 Z" fill="#0369A1" opacity="0.7" stroke={G} strokeWidth="1" />
       </g>
-      <g transform="translate(45,23)" style={on ? { transformOrigin: '51px 27px', animation: '1.4s ease-in-out 0.15s 1 pyr-spin' } : { transformOrigin: '51px 27px', animation: '3.4s ease-in-out 0.3s infinite shape-float' }}>
-        <path d="M0,8 L6,4 L12,8 L6,11 Z" fill="#0369A1" opacity="0.45" stroke={G} strokeWidth="0.9" />
-        <path d="M0,8 L6,-4 L6,11 Z" fill={B} opacity="0.35" stroke={G} strokeWidth="0.9" />
-        <path d="M12,8 L6,-4 L6,11 Z" fill="#0369A1" opacity="0.6" stroke={G} strokeWidth="0.9" />
+      {/* outer g positions the pyramid; inner g animates (a CSS transform would otherwise replace the translate) */}
+      <g transform="translate(45,23)">
+        <g style={on ? { transformOrigin: '6px 4px', animation: '1.4s ease-in-out 0.15s 1 pyr-spin' } : { transformOrigin: '6px 4px', animation: '3.4s ease-in-out 0.3s infinite shape-float' }}>
+          <path d="M0,8 L6,4 L12,8 L6,11 Z" fill="#0369A1" opacity="0.45" stroke={G} strokeWidth="0.9" />
+          <path d="M0,8 L6,-4 L6,11 Z" fill={B} opacity="0.35" stroke={G} strokeWidth="0.9" />
+          <path d="M12,8 L6,-4 L6,11 Z" fill="#0369A1" opacity="0.6" stroke={G} strokeWidth="0.9" />
+        </g>
       </g>
       <rect x="20" y="45" width="24" height="9" rx="2.5" fill="#0F172A" stroke={on ? G : B} strokeWidth="1.4" style={{ transition: 'stroke 0.3s' }} />
       <rect x="24" y="48" width="6" height="1.6" rx="0.8" fill={G} opacity={on ? 1 : 0.6} style={{ transition: 'opacity 0.3s' }} />
@@ -136,7 +139,7 @@ export function GameIcon({ on }: IconProps) {
 /* ── 03 · Robotics — waves with a raised arm and a 👋 speech bubble ── */
 export function RobotIcon({ on }: IconProps) {
   return (
-    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block' }}>
+    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block', direction: 'ltr', unicodeBidi: 'isolate' }}>
       <style>{`
         @keyframes signal-ring { 0%{opacity:.8;transform:scale(0.4)} 100%{opacity:0;transform:scale(1.6)} }
         @keyframes bubble-pop { 0%{opacity:0; transform:scale(0.6) translateY(4px)} 100%{opacity:1; transform:scale(1) translateY(0)} }
@@ -195,7 +198,7 @@ export function BrowserIcon({ on }: IconProps) {
   }, [on])
 
   return (
-    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block' }}>
+    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block', direction: 'ltr', unicodeBidi: 'isolate' }}>
       <style>{`
         @keyframes cur-blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes spin { to { transform: rotate(360deg) } }
@@ -262,7 +265,7 @@ export function PhoneIcon({ on }: IconProps) {
     ['#06B6D4', '#F97316', '#84CC16'],
   ]
   return (
-    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block' }}>
+    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block', direction: 'ltr', unicodeBidi: 'isolate' }}>
       <style>{`@keyframes swipe-hint { 0%{transform:translateY(0); opacity:0} 30%{opacity:.8} 100%{transform:translateY(-10px); opacity:0} }`}</style>
       <ellipse cx="32" cy="63" rx="14" ry="1.8" fill="#000" opacity="0.3" />
       <rect x="13" y="2" width="38" height="60" rx="8" fill="#0F172A" stroke={on ? G : B} strokeWidth="1.8" style={{ transition: 'stroke 0.3s' }} />
@@ -334,7 +337,7 @@ export function DesktopIcon({ on }: IconProps) {
     { x: 19, y: 20, w: 30, h: 18, c: '#10B981', origin: '34px 29px' },
   ]
   return (
-    <svg width="96" height="87" viewBox="0 0 64 58" style={{ overflow: 'visible', display: 'block' }}>
+    <svg width="96" height="87" viewBox="0 0 64 58" style={{ overflow: 'visible', display: 'block', direction: 'ltr', unicodeBidi: 'isolate' }}>
       <style>{`
         @keyframes win-open { from{transform:scale(0.4);opacity:0} to{transform:scale(1);opacity:1} }
         @keyframes cursor-move { 0%{ transform:translate(58px,52px); opacity:0 } 15%{ opacity:1 } 55%{ transform:translate(8.5px,36.5px); opacity:1 } 100%{ transform:translate(8.5px,36.5px); opacity:0 } }
@@ -394,7 +397,7 @@ export function NetworkIcon({ on }: IconProps) {
     { x1: 32, y1: 52, x2: 54, y2: 40, delay: 0.72 },
   ]
   return (
-    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block' }}>
+    <svg width="96" height="96" viewBox="0 0 64 64" style={{ overflow: 'visible', display: 'block', direction: 'ltr', unicodeBidi: 'isolate' }}>
       <style>{`
         @keyframes net-edge { 0%{stroke-opacity:.15;stroke-width:1} 45%{stroke-opacity:1;stroke-width:2.2;stroke:${G}} 100%{stroke-opacity:.15;stroke-width:1} }
         @keyframes net-node { 0%,100%{fill:#0369A1} 45%{fill:${G}} }

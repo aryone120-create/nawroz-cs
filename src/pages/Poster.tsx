@@ -102,7 +102,7 @@ export function PosterSheet() {
           <img src={logo} alt="Nawroz University" style={{ height: 48, width: 48, objectFit: 'contain', borderRadius: '50%', background: '#fff', padding: 3 }} />
           <div>
             <div style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: 13, color: '#fff', letterSpacing: -0.2 }}>Computer Science</div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: BLUE_GLOW, letterSpacing: 1.5 }}>NAWROZ UNIVERSITY · DUHOK</div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: BLUE_GLOW, letterSpacing: 1.5 }}>NAWROZ UNIVERSITY</div>
           </div>
         </div>
 
